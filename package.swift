@@ -1,3 +1,4 @@
+// swift-tools-version: 6.2
 import PackageDescription
 
 let package = Package(
@@ -36,7 +37,10 @@ let package = Package(
             ),
         .testTarget(
             name: "Tests",
-            dependencies: ["Application", "Domain", "Infrastructure"]
+            dependencies: ["Application", "Domain", "Infrastructure"],
+            resources: [
+                .process("run_tests.sh")
+            ]
         ),
     ]
 )

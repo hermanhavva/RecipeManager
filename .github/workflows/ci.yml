@@ -1,4 +1,4 @@
-name: Recipe manger tests
+name: Recipe Manager CI
 
 on:
   push:
@@ -6,29 +6,17 @@ on:
   pull_request:
     branches: [ "main" ]
 
-permissions:
-  checks: write
-  actions: read
-  contents: read
-  
 jobs:
-  run-autograding-tests:
-    runs-on: ubuntu-latest
-    if: github.actor != 'github-classroom[bot]'
+  test:
+    name: Build and Test
+    runs-on: macos-latest
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Tests
-      id: tests
-      uses: classroom-resources/autograding-command-grader@v1
-      with:
-        test-name: Tests
-        setup-command: ''
-        command: "./Tests/run_tests.sh"
-        timeout: 10
-    - name: Autograding Reporter
-      uses: classroom-resources/autograding-grading-reporter@v1
-      env:
-        TESTS_RESULTS: "${{steps.tests.outputs.result}}"
-      with:
-        runners: tests
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Make script executable
+        run: chmod +x Tests/run_tests
+
+      - name: Run Validation Script
+        run: ./Tests/run_tests
