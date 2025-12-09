@@ -123,12 +123,6 @@ final class RecipeTableCell: UITableViewCell {
             $0.top.equalTo(name.snp.bottom).offset(12)
         }
         
-        
-        // Here should be info from model, stub: true
-        let stub = 1
-        isFavorited.image = stub.isMultiple(of: 1) ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
-        isFavorited.tintColor = .systemRed
-        
         isFavorited.snp.makeConstraints{
             $0.width.height.equalTo(20)
             $0.bottom.equalTo(name.snp.bottom)
@@ -165,5 +159,10 @@ final class RecipeTableCell: UITableViewCell {
         calories.text = "350"
         timeTaken.text = "15 хв"
         forPeople.text = "1"
+        //stub: true
+        let stub = 1
+        isFavorited.image = stub.isMultiple(of: 1) ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
+        isFavorited.tintColor = .systemRed
+        
     }
 }
