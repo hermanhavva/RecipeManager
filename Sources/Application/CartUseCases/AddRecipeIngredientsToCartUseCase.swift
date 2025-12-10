@@ -7,7 +7,7 @@ public class AddRecipeIngredientsToCartUseCase {
         self.repository = repository
     }
     
-    public func execute(recipe: Recipe) async throws {
+    public func execute(recipe: Recipe, to cartId: UUID) async throws {
         let ingredientsForCart = recipe.ingredients.map { original in
             Ingredient(
                 id: UUID(),
@@ -16,7 +16,6 @@ public class AddRecipeIngredientsToCartUseCase {
                 unit: original.unit
             )
         }
-        
-        try await repository.add(ingredients: ingredientsForCart)
+        try await repository.add(ingredients: ingredientsForCart, to: cartId)
     }
 }

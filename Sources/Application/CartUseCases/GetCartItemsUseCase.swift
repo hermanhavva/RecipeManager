@@ -7,7 +7,7 @@ public class GetCartItemsUseCase {
     public init(repository: CartRepositoryType) {
         self.repository = repository
     }
-    public func execute() async throws -> [Ingredient] {
-        return try await repository.getItems()
+    public func execute(cartId: UUID) async throws -> [Ingredient] {
+        return try await repository.getItems(cartId: cartId)
     }
 }

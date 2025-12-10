@@ -7,7 +7,7 @@ public class RemoveFromCartUseCase {
         self.repository = repository
     }
     
-    public func execute(id: UUID) async throws {
-        try await repository.remove(id: id)
+    public func execute(id: UUID, from cartId: UUID) async throws {
+        try await repository.remove(id: id, from: cartId)
     }
 }
