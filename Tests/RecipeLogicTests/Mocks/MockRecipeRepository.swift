@@ -9,7 +9,7 @@ class MockRecipeRepository: RecipeRepositoryType {
         return items
     }
     
-    func save(recipe: Recipe) async throws {
+    func add(recipe: Recipe) async throws {
         items.append(recipe)
     }
     func update(recipe: Recipe) async throws {

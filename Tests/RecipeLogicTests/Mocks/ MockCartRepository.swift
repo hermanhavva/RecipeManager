@@ -3,25 +3,34 @@ import Foundation
 @testable import Application
 
 class MockCartRepository: CartRepositoryType {
-    var items: [Ingredient] = []
-    
-    func getItems() async throws -> [Ingredient] {
-        return items
+    var carts: [UUID: [Ingredient]] = [:]
+    func getItemsInMock(cartId: UUID) -> [Ingredient] {
+        return carts[cartId] ?? []
     }
     
-    func add(ingredients: [Ingredient]) async throws {
-        items.append(contentsOf: ingredients)
+    func getItems(cartId: UUID) async throws -> [Ingredient] {
+        return carts[cartId] ?? []
     }
     
-    func add(ingredient: Ingredient) async throws {
-        items.append(ingredient)
+    func add(ingredients: [Ingredient], to cartId: UUID) async throws {
+        var currentItems = carts[cartId] ?? []
+        currentItems.append(contentsOf: ingredients)
+        carts[cartId] = currentItems
     }
     
-    func remove(id: UUID) async throws {
-        items.removeAll { $0.id == id }
+    func add(ingredient: Ingredient, to cartId: UUID) async throws {
+        var currentItems = carts[cartId] ?? []
+        currentItems.append(ingredient)
+        carts[cartId] = currentItems
     }
     
-    func clear() async throws {
-        items.removeAll()
+    func remove(id: UUID, from cartId: UUID) async throws {
+        var currentItems = carts[cartId] ?? []
+        currentItems.removeAll { $0.id == id }
+        carts[cartId] = currentItems
+    }
+    
+    func clear(cartId: UUID) async throws {
+        carts[cartId] = []
     }
 }
