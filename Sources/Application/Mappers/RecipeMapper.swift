@@ -12,9 +12,11 @@ public struct RecipeMapper {
             throw RecipeAppError.invalidCalories
         }
         
-        guard let timeInt = Int(dto.cookingTime), timeInt > 0 else {
+        guard dto.cookingTime > 0 else {
             throw RecipeAppError.invalidCookingTime
         }
+
+        let timeInMinutes = Int(dto.cookingTime / 60)
         
         guard let servInt = Int(dto.servings), servInt > 0 else {
             throw RecipeAppError.invalidServings
@@ -33,7 +35,7 @@ public struct RecipeMapper {
             title: dto.title,
             description: dto.description,
             calories: calInt,
-            cookingTime: timeInt,
+            cookingTime: timeInMinutes,
             servings: servInt,
             category: dto.category,
             ingredients: dto.ingredients,
