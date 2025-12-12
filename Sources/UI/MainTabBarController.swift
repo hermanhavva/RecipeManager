@@ -1,10 +1,3 @@
-//
-//  MainTabBarController.swift
-//
-//
-//  Created by Daniel Bond on 09.12.2025.
-//
-
 import Foundation
 import SwiftUI
 
@@ -41,7 +34,7 @@ func createTabBarController() -> UITabBarController{
     ]
     
     tabBarController.setValue(MainTabBar(), forKey: "tabBar")
-    tabBarController.tabBar.backgroundColor = .init(red: 181/255, green: 227/255, blue: 194/255, alpha: 1)
+    tabBarController.tabBar.backgroundColor = RecipeMainViewController.buttonBackgroundColor
     return tabBarController
 }
 
@@ -76,7 +69,7 @@ class MainTabBar: UITabBar {
             height: height
         )
 
-        self.layer.cornerRadius = 25
+        self.layer.cornerRadius = RecipeMainViewController.buttonCornerRadius
         self.layer.masksToBounds = true
     }
 }

@@ -1,20 +1,29 @@
-//
-//  RecipeTableCell.swift
-//  
-//
-//  Created by Daniel Bond on 08.12.2025.
-//
-
 import Foundation
 import UIKit
 import SnapKit
 import SwiftUI
 
 final class RecipeTableCell: UITableViewCell {
+    // MARK: Replacing magic constants with variables
+    static let nameFont: UIFont = .systemFont(ofSize: 22, weight: .semibold)
+    
+    static let statsFont: UIFont = .systemFont(ofSize: 10, weight: .regular)
+    static let statsCornerRadius: CGFloat = 10
+    
+    static let caloriesBackgroundColor: UIColor = .init(red: 255/255, green: 241/255, blue: 218/255, alpha: 1)
+    static let timeTakenBackgroundColor: UIColor = .init(red: 218/255, green: 232/255, blue: 255/255, alpha: 1)
+    static let portionsBackgroundColor: UIColor = .init(red: 237/255, green: 218/255, blue: 255/255, alpha: 1)
+    
+    static let backgroundCornerRadius: CGFloat = 20
+    static let backgroundShadowOpacity: Float = 0.3
+    static let backgroundShadowOffset: CGFloat = 4
+    
+    static let colorCircleRadius: CGFloat = 6
+    // MARK: UI
     let name: UILabel = {
         let view = UILabel()
-        view.font = .systemFont(ofSize: 22, weight: .semibold)
-        view.numberOfLines = 0
+        view.font = nameFont
+        view.numberOfLines = 0 // Needed to wrap lines
         view.lineBreakMode = .byWordWrapping
         return view
     }()
@@ -22,9 +31,9 @@ final class RecipeTableCell: UITableViewCell {
     let calories: UILabel = {
         let view = UILabel()
         view.textAlignment = .center
-        view.font = .systemFont(ofSize: 10, weight: .regular)
-        view.backgroundColor = UIColor.init(red: 255/255, green: 241/255, blue: 218/255, alpha: 1)
-        view.layer.cornerRadius = 10
+        view.font = statsFont
+        view.backgroundColor = caloriesBackgroundColor
+        view.layer.cornerRadius = statsCornerRadius
         view.clipsToBounds = true
         return view
     }()
@@ -32,9 +41,9 @@ final class RecipeTableCell: UITableViewCell {
     let timeTaken: UILabel = {
         let view = UILabel()
         view.textAlignment = .center
-        view.font = .systemFont(ofSize: 10, weight: .regular)
-        view.backgroundColor = UIColor.init(red: 218/255, green: 232/255, blue: 255/255, alpha: 1)
-        view.layer.cornerRadius = 10
+        view.font = statsFont
+        view.backgroundColor = timeTakenBackgroundColor
+        view.layer.cornerRadius = statsCornerRadius
         view.clipsToBounds = true
         return view
     }()
@@ -42,16 +51,16 @@ final class RecipeTableCell: UITableViewCell {
     let forPeople: UILabel = {
         let view = UILabel()
         view.textAlignment = .center
-        view.font = .systemFont(ofSize: 10, weight: .regular)
-        view.backgroundColor = UIColor.init(red: 237/255, green: 218/255, blue: 255/255, alpha: 1)
-        view.layer.cornerRadius = 10
+        view.font = statsFont
+        view.backgroundColor = portionsBackgroundColor
+        view.layer.cornerRadius = statsCornerRadius
         view.clipsToBounds = true
         return view
     }()
     
     let colorCircle: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = 6
+        view.layer.cornerRadius = colorCircleRadius
         return view
     }()
     
@@ -63,12 +72,12 @@ final class RecipeTableCell: UITableViewCell {
     let roundedBackground: UIView = {
         let view = UIView()
         view.backgroundColor = .white
-        view.layer.cornerRadius = 20
+        view.layer.cornerRadius = backgroundCornerRadius
         view.layer.masksToBounds = false
         view.layer.shadowColor = UIColor.black.cgColor
-        view.layer.shadowOpacity = 0.3
-        view.layer.shadowOffset = CGSize(width: 0, height: 4)
-        view.layer.shadowRadius = 4
+        view.layer.shadowOpacity = backgroundShadowOpacity
+        view.layer.shadowOffset = CGSize(width: 0, height: backgroundShadowOffset)
+        view.layer.shadowRadius = backgroundShadowOffset
         return view
     }()
     
@@ -95,59 +104,69 @@ final class RecipeTableCell: UITableViewCell {
         roundedBackground.addSubview(isFavorited)
         roundedBackground.addSubview(line)
         
+        let roundedBackgroundBaseInset = 8
         roundedBackground.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(8)
-            $0.bottom.equalToSuperview().inset(8)
-            $0.leading.equalToSuperview().inset(16)
-            $0.trailing.equalToSuperview().inset(16)
+            $0.top.equalToSuperview().inset(roundedBackgroundBaseInset)
+            $0.bottom.equalToSuperview().inset(roundedBackgroundBaseInset)
+            $0.leading.equalToSuperview().inset(2*roundedBackgroundBaseInset)
+            $0.trailing.equalToSuperview().inset(2*roundedBackgroundBaseInset)
         }
         
+        let colorCircleBaseOffset = 10
         colorCircle.snp.makeConstraints{
-            $0.width.height.equalTo(12)
-            $0.top.equalToSuperview().offset(20)
-            $0.leading.equalToSuperview().offset(10)
+            $0.width.height.equalTo(2*RecipeTableCell.colorCircleRadius)
+            $0.top.equalToSuperview().offset(2*colorCircleBaseOffset)
+            $0.leading.equalToSuperview().offset(colorCircleBaseOffset)
         }
         
+        let nameBaseConstraint = 10
         name.snp.makeConstraints{
-            $0.top.equalToSuperview().offset(20)
-            $0.leading.equalTo(colorCircle.snp.trailing).offset(10)
-            $0.trailing.equalTo(isFavorited.snp.leading).inset(10)
-            $0.leadingMargin.equalTo(10)
-            $0.trailingMargin.equalTo(20)
+            $0.top.equalToSuperview().offset(2*nameBaseConstraint)
+            $0.leading.equalTo(colorCircle.snp.trailing).offset(nameBaseConstraint)
+            $0.trailing.equalTo(isFavorited.snp.leading).inset(nameBaseConstraint)
+            $0.leadingMargin.equalTo(nameBaseConstraint)
+            $0.trailingMargin.equalTo(2*nameBaseConstraint)
         }
         
+        let dividerBaseConstraint = 4
         line.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(16)
-            $0.trailing.equalToSuperview().inset(16)
+            $0.leading.equalToSuperview().offset(4*dividerBaseConstraint)
+            $0.trailing.equalToSuperview().inset(4*dividerBaseConstraint)
             $0.height.equalTo(1)
-            $0.top.equalTo(name.snp.bottom).offset(12)
+            $0.top.equalTo(name.snp.bottom).offset(3*dividerBaseConstraint)
         }
         
+        let favoriteInset = 20
         isFavorited.snp.makeConstraints{
             $0.width.height.equalTo(20)
             $0.bottom.equalTo(name.snp.bottom)
-            $0.trailing.equalToSuperview().inset(20)
+            $0.trailing.equalToSuperview().inset(favoriteInset)
         }
         
+        let statsWidth = 50
+        let statsHeight = 20
+        let statsTop = 30
+        let statsHorizontal = 50
+        
         calories.snp.makeConstraints{
-            $0.width.equalTo(50)
-            $0.height.equalTo(20)
-            $0.top.equalTo(line.snp.bottom).offset(30)
-            $0.leading.equalToSuperview().offset(50)
+            $0.width.equalTo(statsWidth)
+            $0.height.equalTo(statsHeight)
+            $0.top.equalTo(line.snp.bottom).offset(statsTop)
+            $0.leading.equalToSuperview().offset(statsHorizontal)
         }
         
         timeTaken.snp.makeConstraints{
-            $0.width.equalTo(50)
-            $0.height.equalTo(20)
-            $0.top.equalTo(line.snp.bottom).offset(30)
+            $0.width.equalTo(statsWidth)
+            $0.height.equalTo(statsHeight)
+            $0.top.equalTo(line.snp.bottom).offset(statsTop)
             $0.centerX.equalToSuperview()
         }
         
         forPeople.snp.makeConstraints{
-            $0.width.equalTo(50)
-            $0.height.equalTo(20)
-            $0.top.equalTo(line.snp.bottom).offset(30)
-            $0.trailing.equalToSuperview().inset(50)
+            $0.width.equalTo(statsWidth)
+            $0.height.equalTo(statsHeight)
+            $0.top.equalTo(line.snp.bottom).offset(statsTop)
+            $0.trailing.equalToSuperview().inset(statsHorizontal)
         }
         
     }

@@ -1,10 +1,3 @@
-//
-//  MainApp.swift
-//
-//
-//  Created by Daniel Bond on 09.12.2025.
-//
-
 import Foundation
 import SwiftUI
 

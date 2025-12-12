@@ -1,10 +1,3 @@
-//
-//  ViewControllerWrapper.swift
-//
-//
-//  Created by Daniel Bond on 08.12.2025.
-//
-
 import SwiftUI
 
 extension UIView {

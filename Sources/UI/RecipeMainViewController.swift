@@ -1,16 +1,17 @@
-//
-//  RecipeMainViewController.swift
-//
-//
-//  Created by Daniel Bond on 08.12.2025.
-//
-
 import Foundation
 import SnapKit
 import UIKit
 import SwiftUI
 
 final class RecipeMainViewController: UIViewController {
+    // MARK: constants
+    static let labelFont: UIFont = .systemFont(ofSize: 30, weight: .regular)
+    
+    static let buttonBackgroundColor: UIColor = .init(red: 181/255, green: 227/255, blue: 194/255, alpha: 1)
+    static let buttonCornerRadius: CGFloat = 20
+    
+    // MARK: UI
+    
     //TODO: connect to a ViewModel and get real data
     
     let tableView = UITableView()
@@ -18,7 +19,7 @@ final class RecipeMainViewController: UIViewController {
     let label: UILabel = {
         let view = UILabel()
         view.text = "Рецепти"
-        view.font = .systemFont(ofSize: 30, weight: .regular)
+        view.font = labelFont
         view.textColor = .black
         return view
     }()
@@ -27,9 +28,9 @@ final class RecipeMainViewController: UIViewController {
     let addRecipeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Додати рецепт", for: .normal)
-        button.backgroundColor = .init(red: 181/255, green: 227/255, blue: 194/255, alpha: 1)
+        button.backgroundColor = buttonBackgroundColor
         button.setTitleColor(.black, for: .normal)
-        button.layer.cornerRadius = 20
+        button.layer.cornerRadius = buttonCornerRadius
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -48,22 +49,24 @@ final class RecipeMainViewController: UIViewController {
         view.addSubview(tableView)
         view.addSubview(addRecipeButton)
         
+        let topBaseOffset: Double = 30
+        
         label.snp.makeConstraints{
             $0.centerX.equalToSuperview()
-            $0.top.equalToSuperview().offset(30)
+            $0.top.equalToSuperview().offset(topBaseOffset)
         }
         
         tableView.snp.makeConstraints{
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(view.snp.centerY).offset(230)
-            $0.top.equalTo(label.snp.bottom).offset(30)
+            $0.top.equalTo(label.snp.bottom).offset(topBaseOffset)
         }
         
         addRecipeButton.snp.makeConstraints{
             $0.width.equalTo(180)
-            $0.height.equalTo(40)
+            $0.height.equalTo(2*RecipeMainViewController.buttonCornerRadius)
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(tableView.snp.bottom).offset(15)
+            $0.top.equalTo(tableView.snp.bottom).offset(0.5*topBaseOffset)
         }
         
         tableView.register(RecipeTableCell.self, forCellReuseIdentifier: "RecipeTableCell")
@@ -89,7 +92,7 @@ extension RecipeMainViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         
-        cell.setup(with: "Long Recipe Text Example Multiple Lines")
+        cell.setup(with: "Приклад довгої назви рецепту на два рядки")
         
         return cell
         
