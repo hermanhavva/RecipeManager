@@ -8,6 +8,10 @@ public class RemoveFromCartUseCase {
     }
     
     public func execute(id: UUID, from cartId: UUID) async throws {
-        try await repository.remove(id: id, from: cartId)
+        do {
+            return try await repository.remove(id: id, from: cartId)
+        } catch {
+            throw RecipeAppError.dataLoadingError(underlying: error)
+        }
     }
 }

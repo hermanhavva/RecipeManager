@@ -3,6 +3,7 @@ import Domain
 
 public class AddRecipeIngredientsToCartUseCase {
     private let repository: CartRepositoryType
+    
     public init(repository: CartRepositoryType) {
         self.repository = repository
     }
@@ -16,6 +17,11 @@ public class AddRecipeIngredientsToCartUseCase {
                 unit: original.unit
             )
         }
-        try await repository.add(ingredients: ingredientsForCart, to: cartId)
+        
+        do {
+            try await repository.add(ingredients: ingredientsForCart, to: cartId)
+        } catch {
+            throw RecipeAppError.dataLoadingError(underlying: error)
+        }
     }
 }

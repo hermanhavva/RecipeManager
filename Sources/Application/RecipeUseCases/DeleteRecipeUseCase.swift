@@ -1,4 +1,5 @@
 import Foundation
+import Domain
 
 public class DeleteRecipeUseCase {
     private let repository: RecipeRepositoryType
@@ -8,6 +9,10 @@ public class DeleteRecipeUseCase {
     }
     
     public func execute(recipeId: UUID) async throws {
-        try await repository.delete(recipeId: recipeId)
+        do {
+            try await repository.delete(recipeId: recipeId)
+        } catch {
+            throw RecipeAppError.dataLoadingError(underlying: error)
+        }
     }
 }

@@ -7,8 +7,13 @@ public class GetRecipesUseCase {
     public init(repository: RecipeRepositoryType) {
         self.repository = repository
     }
+    
     public func execute() async throws -> [Recipe] {
-        let recipes = try await repository.fetchRecipes()
-        return recipes.sorted { $0.createdAt > $1.createdAt }
+        do {
+            let recipes = try await repository.fetchRecipes()
+            return recipes.sorted { $0.createdAt > $1.createdAt }
+        } catch {
+            throw RecipeAppError.dataLoadingError(underlying: error)
+        }
     }
 }
