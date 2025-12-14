@@ -1,9 +1,11 @@
 import Foundation
 import SnapKit
 import UIKit
-import SwiftUI
 
 final class RecipeMainViewController: UIViewController {
+    // This is here to allow reusing the view for "favorites" page
+    // Should probably be in the ViewModel to keep structure
+    var isFavoriteViewController: Bool = false;
     // MARK: constants
     static let labelFont: UIFont = .systemFont(ofSize: 30, weight: .regular)
     
@@ -35,8 +37,9 @@ final class RecipeMainViewController: UIViewController {
         return button
     }()
     
-    init() {
+    init(favorite: Bool = false) {
         super.init(nibName: nil, bundle: nil)
+        isFavoriteViewController = favorite
         setupUI()
     }
     
@@ -47,9 +50,10 @@ final class RecipeMainViewController: UIViewController {
     func setupUI() {
         view.addSubview(label)
         view.addSubview(tableView)
-        view.addSubview(addRecipeButton)
         
         let topBaseOffset: Double = 30
+        
+        label.text = isFavoriteViewController ? "Улюблені" : "Рецепти"
         
         label.snp.makeConstraints{
             $0.centerX.equalToSuperview()
@@ -62,11 +66,14 @@ final class RecipeMainViewController: UIViewController {
             $0.top.equalTo(label.snp.bottom).offset(topBaseOffset)
         }
         
-        addRecipeButton.snp.makeConstraints{
-            $0.width.equalTo(180)
-            $0.height.equalTo(2*RecipeMainViewController.buttonCornerRadius)
-            $0.centerX.equalToSuperview()
-            $0.top.equalTo(tableView.snp.bottom).offset(0.5*topBaseOffset)
+        if (!isFavoriteViewController) {
+            view.addSubview(addRecipeButton)
+            addRecipeButton.snp.makeConstraints{
+                $0.width.equalTo(180)
+                $0.height.equalTo(2*RecipeMainViewController.buttonCornerRadius)
+                $0.centerX.equalToSuperview()
+                $0.top.equalTo(tableView.snp.bottom).offset(0.5*topBaseOffset)
+            }
         }
         
         tableView.register(RecipeTableCell.self, forCellReuseIdentifier: "RecipeTableCell")
@@ -77,6 +84,8 @@ final class RecipeMainViewController: UIViewController {
 }
 
 //TODO: Replace fixed values
+//TODO: The list of recipes should be filtered if this is favorite instance
+// Something like recipes.filter { $0.isFavorite }
 extension RecipeMainViewController: UITableViewDelegate, UITableViewDataSource {
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -97,9 +106,4 @@ extension RecipeMainViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
         
     }
-}
-
-
-#Preview {
-    RecipeMainViewController().asPreview()
 }

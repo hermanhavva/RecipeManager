@@ -3,34 +3,31 @@ import SwiftUI
 
 func createTabBarController() -> UITabBarController{
     let tabBarController = UITabBarController()
+    
     let recipeMainViewController = RecipeMainViewController()
-    //TODO: Add here all the other views, using stubs instead
-    let view2 = UIViewController()
-    let view3 = UIViewController()
-    //
+    let ingredientStorageViewController = IngredientStorageViewController()
+    let recipeFavoriteViewController = RecipeMainViewController(favorite: true)
     
     let recipeMainNav = UINavigationController(rootViewController: recipeMainViewController)
-    //Stubs
-    let view2Nav = UINavigationController(rootViewController: view2)
-    let view3Nav = UINavigationController(rootViewController: view3)
-    //
+    let ingrStorageNav = UINavigationController(rootViewController: ingredientStorageViewController)
+    let recipeFavNav = UINavigationController(rootViewController: recipeFavoriteViewController)
     
     recipeMainNav.tabBarItem = UITabBarItem(
         title: "", image: UIImage(systemName: "house"), tag: 0
     )
-    //Stubs
-    view2Nav.tabBarItem = UITabBarItem(
+    ingrStorageNav.tabBarItem = UITabBarItem(
         title: "", image: UIImage(systemName: "cart"), tag: 1
     )
-    view3Nav.tabBarItem = UITabBarItem(
+    // Stub
+    recipeFavNav.tabBarItem = UITabBarItem(
         title: "", image: UIImage(systemName: "heart"), tag: 2
     )
     //
     
     tabBarController.viewControllers = [
         recipeMainNav,
-        view2Nav,
-        view3Nav
+        ingrStorageNav,
+        recipeFavNav
     ]
     
     tabBarController.setValue(MainTabBar(), forKey: "tabBar")

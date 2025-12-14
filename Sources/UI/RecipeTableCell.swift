@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import SnapKit
-import SwiftUI
 
 final class RecipeTableCell: UITableViewCell {
     // MARK: Replacing magic constants with variables
