@@ -6,7 +6,7 @@ func createTabBarController() -> UITabBarController{
     
     let recipeMainViewController = RecipeMainViewController()
     let ingredientStorageViewController = IngredientStorageViewController()
-    let recipeFavoriteViewController = RecipeMainViewController(favorite: true)
+    let recipeFavoriteViewController = RecipeFavoriteViewController()
     
     let recipeMainNav = UINavigationController(rootViewController: recipeMainViewController)
     let ingrStorageNav = UINavigationController(rootViewController: ingredientStorageViewController)
