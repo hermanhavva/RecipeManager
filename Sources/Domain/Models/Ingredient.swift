@@ -15,13 +15,13 @@ public struct Ingredient: Identifiable, Codable, Equatable {
     
     public func validate() throws {
         guard !name.isEmpty else {
-            throw ValidationError("Name cannot be empty")
+            throw IngredientConstraintsValidationError(reason: "Name cannot be empty")
         }
         guard !amount.isEmpty else {
-            throw ValidationError("Amount cannot be empty")
+            throw IngredientConstraintsValidationError(reason: "Amount cannot be empty")
         }
         guard !unit.isEmpty else {
-            throw ValidationError("Unit cannot be empty")
+            throw IngredientConstraintsValidationError(reason: "Unit cannot be empty")
         }
     }
 }
