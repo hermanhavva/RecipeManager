@@ -1,15 +1,16 @@
 import Foundation
 import UIKit
 
-class IngredientTableDelegate: UIViewController {
-    public var cellForRowAt: ((_ tableView: UITableView, _ indexPath: IndexPath) -> UITableViewCell)?;
+class IngredientTableDelegate: NSObject {
+    public var numberOfRows: (() -> Int)?
+    public var cellForRowAt: ((_ tableView: UITableView, _ indexPath: IndexPath) -> UITableViewCell)?
 }
 
 //TODO: Replace fixed values
 extension IngredientTableDelegate: UITableViewDelegate, UITableViewDataSource {
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        3
+        return numberOfRows?() ?? 0
     }
     
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 import SnapKit
-
+import Domain
 final class RecipeTableCell: UITableViewCell {
     // MARK: Replacing magic constants with variables
     static let nameFont: UIFont = .systemFont(ofSize: 22, weight: .semibold)
@@ -170,17 +170,25 @@ final class RecipeTableCell: UITableViewCell {
         
     }
     
-    // TODO: Pass the recipe here, change the input type, assign the values. Just a stub
-    func setup(with recipe: String) {
-        name.text = recipe
-        colorCircle.backgroundColor = .green
-        calories.text = "350"
-        timeTaken.text = "15 хв"
-        forPeople.text = "1"
-        //stub: true
-        let stub = 1
-        isFavorited.image = stub.isMultiple(of: 1) ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
-        isFavorited.tintColor = .systemRed
-        
+//     TODO: Pass the recipe here, change the input type, assign the values. Just a stub 
+    func setup(with recipe: Recipe) {
+        name.text = recipe.title
+        calories.text = "\(recipe.calories) ккал"
+        timeTaken.text = "\(recipe.cookingTime) хв"
+        forPeople.text = "\(recipe.servings) перс."
+        switch recipe.category {
+        case .breakfast:
+                colorCircle.backgroundColor = .systemYellow
+        case .lunch:
+                colorCircle.backgroundColor = .systemGreen
+        case .dinner:
+                colorCircle.backgroundColor = .systemBlue
+        case .snack:
+                colorCircle.backgroundColor = .systemOrange
+        }
+        let iconName = recipe.isFavorite ? "heart.fill" : "heart"
+        isFavorited.image = UIImage(systemName: iconName)
+        isFavorited.tintColor = recipe.isFavorite ? .systemRed : .gray
     }
 }
+

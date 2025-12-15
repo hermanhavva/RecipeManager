@@ -2,8 +2,16 @@ import Foundation
 import UIKit
 import SnapKit
 import SwiftUI
+import Presentation
+import Combine
+import Domain
+import Application
+
 
 final class RecipeDisplayViewController: UIViewController {
+    private let viewModel: RecipeDisplayViewModel
+    private var cancellables = Set<AnyCancellable>()
+    
     let displayedRecipe: RecipeTableCell = RecipeTableCell()
     let ingredientTableDelegate = IngredientTableDelegate()
 
@@ -49,14 +57,60 @@ final class RecipeDisplayViewController: UIViewController {
     
 
     //TODO: change to the real recipe
-    init(recipe: String){
+    init(viewModel: RecipeDisplayViewModel){
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        displayedRecipe.setup(with: recipe)
-        setupUI()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+        setupData()
+        bindViewModel()
+        setupActions()
+    }
+    func setupData() {
+        let recipe = viewModel.recipe
+        displayedRecipe.setup(with: recipe)
+        segmentOption2.text = recipe.description
+        segmentOption1.reloadData()
+    }
+    
+    func setupActions() {
+        addAllIngredientsToCartButton.addTarget(self, action: #selector(addToCartTapped), for: .touchUpInside)
+            
+        segmentedControl.addTarget(self, action: #selector(segmentChanged), for: .valueChanged)
+    }
+    
+    @objc func addToCartTapped() {
+        viewModel.addIngredientsToCart()
+    }
+    func bindViewModel() {
+        viewModel.$isIngredientsAdded
+            .receive(on: RunLoop.main)
+            .sink { [weak self] isAdded in
+            if isAdded {
+                self?.showAlert(title: "Успіх", message: "Інгредієнти додано в корзину!")
+            }
+        }
+        .store(in: &cancellables)
+        
+        viewModel.$errorMessage
+            .compactMap { $0 }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] message in
+                self?.showAlert(title: "Помилка", message: message)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
     
     func setupUI(){
@@ -104,16 +158,21 @@ final class RecipeDisplayViewController: UIViewController {
 Multiline recipe
 About those ingredients
 """
-        
-        ingredientTableDelegate.cellForRowAt = {
-            tableView, indexPath in
+        ingredientTableDelegate.numberOfRows = { [weak self] in
+            return self?.viewModel.recipe.ingredients.count ?? 0
+        }
+        ingredientTableDelegate.cellForRowAt = { [weak self] tableView, indexPath in
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "RecipeIngredientTableCell") as? IngredientTableCell else {
-                return UITableViewCell()
+                        return UITableViewCell()
+        }
+                    
+            if let ingredient = self?.viewModel.recipe.ingredients[indexPath.row] {
+                cell.name.text = ingredient.name
+                cell.count.text = "\(ingredient.amount) \(ingredient.unit)"
+                cell.setup(with: ingredient)
             }
-            
-            cell.setup(with: "Приклад інгредієнту")
-            
-            return cell
+                    
+        return cell
         }
         
         segmentOption1.register(IngredientTableCell.self, forCellReuseIdentifier: "RecipeIngredientTableCell")
@@ -147,6 +206,34 @@ About those ingredients
     }
 }
 
-#Preview {
-    RecipeDisplayViewController(recipe: "Recipe").asPreview()
+#if DEBUG
+class PreviewCartRepository: CartRepositoryType {
+    func getItems(cartId: UUID) async throws -> [Ingredient] { return [] }
+    func add(ingredients: [Ingredient], to cartId: UUID) async throws {}
+    func add(ingredient: Ingredient, to cartId: UUID) async throws {}
+    func remove(id: UUID, from cartId: UUID) async throws {}
+    func clear(cartId: UUID) async throws {}
 }
+
+#Preview {
+    let ingredients = [
+        Ingredient(name: "Milk", amount: "1", unit: "l"),
+        Ingredient(name: "Eggs", amount: "2", unit: "pc")
+    ]
+    let recipe = Recipe(
+        title: "Pancakes",
+        description: "1. Mix ingredients.\n2. Fry.\n3. Eat.",
+        calories: 350,
+        cookingTime: 20,
+        servings: 2,
+        category: .breakfast,
+        ingredients: ingredients
+    )
+
+    let mockRepo = PreviewCartRepository()
+    let useCase = AddRecipeIngredientsToCartUseCase(repository: mockRepo)
+    let viewModel = RecipeDisplayViewModel(recipe: recipe, addRecipeToCartUseCase: useCase)
+
+    RecipeDisplayViewController(viewModel: viewModel).asPreview()
+}
+#endif
