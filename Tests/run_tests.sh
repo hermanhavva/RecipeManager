@@ -22,12 +22,13 @@ if [[ -z "$TARGET_DEVICE" ]]; then
     exit 1
 fi
 
-echo "🚀 Starting tests on $TARGET_DEVICE..."
+echo "Starting tests on $TARGET_DEVICE..."
 
 xcodebuild \
   -scheme RecipeEngine \
   -sdk iphonesimulator \
   -destination "platform=iOS Simulator,name=$TARGET_DEVICE" \
-  clean test
+  clean test \
+  | xcbeatify
 
 echo "✅ Build and tests completed successfully!"
