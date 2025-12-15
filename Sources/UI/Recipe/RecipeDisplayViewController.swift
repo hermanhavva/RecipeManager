@@ -14,6 +14,19 @@ final class RecipeDisplayViewController: UIViewController {
         view.backgroundColor = .systemGray6
         return view
     }()
+    
+    //TODO: add an action to the button
+    let addAllIngredientsToCartButton: UIButton = {
+        let button = UIButton(type: .system)
+            let image = UIImage(
+                systemName: "cart",
+                withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)
+            )
+            button.setImage(image, for: .normal)
+            button.tintColor = .gray
+            return button
+    }()
+    
     let segmentedContainer = UIView()
     
     let segmentOption1 = UITableView()
@@ -51,19 +64,25 @@ final class RecipeDisplayViewController: UIViewController {
         recipeCard.translatesAutoresizingMaskIntoConstraints = false
 
         view.addSubview(recipeCard)
+        view.addSubview(addAllIngredientsToCartButton)
         view.addSubview(segmentedControl)
         view.addSubview(segmentedContainer)
         view.backgroundColor = .white
-        let baseOffset: Double = 50
+        let baseOffset: Double = 25
         recipeCard.snp.makeConstraints {
             $0.width.equalToSuperview()
             $0.height.equalTo(RecipeFavoriteViewController.tableCellHeight)
-            $0.top.equalToSuperview().offset(baseOffset)
+            $0.top.equalToSuperview().offset(2*baseOffset)
             $0.centerX.equalToSuperview()
         }
         
-        segmentedControl.snp.makeConstraints {
+        addAllIngredientsToCartButton.snp.makeConstraints {
             $0.top.equalTo(recipeCard.snp.bottom).offset(baseOffset)
+            $0.trailing.equalToSuperview().inset(baseOffset)
+        }
+        
+        segmentedControl.snp.makeConstraints {
+            $0.top.equalTo(addAllIngredientsToCartButton.snp.bottom).offset(baseOffset)
             $0.centerX.equalToSuperview()
             $0.width.equalToSuperview().inset(30)
         }
@@ -75,7 +94,7 @@ final class RecipeDisplayViewController: UIViewController {
         )
         
         segmentedContainer.snp.makeConstraints {
-            $0.top.equalTo(segmentedControl.snp.bottom).offset(0.5*baseOffset)
+            $0.top.equalTo(segmentedControl.snp.bottom).offset(baseOffset)
             $0.bottom.equalToSuperview().inset(120)
             $0.leading.trailing.equalToSuperview()
         }
