@@ -11,8 +11,12 @@ public class DeleteRecipeUseCase {
     public func execute(recipeId: UUID) async throws {
         do {
             try await repository.delete(recipeId: recipeId)
-        } catch {
-            throw RecipeAppError.dataLoadingError(underlying: error)
+        }
+        catch let error as DomainError {
+            throw error
+        }
+        catch {
+            throw RecipeAppError.unknownError(underlying: error)
         }
     }
 }

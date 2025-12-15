@@ -1,15 +1,14 @@
 import Foundation
 
 public enum RecipeAppError: Error, LocalizedError {
-    case dataLoadingError(underlying: Error)
-    case unknownError
+//    case dataLoadingError(underlying: DomainError)
+//    case domainError(underlying: DomainError)
+    case unknownError(underlying: Error)
     
     public var errorDescription: String? {
         switch self {
-        case .dataLoadingError(let error):
-            return "Failed to save or load data: \(error.localizedDescription)"
-        case .unknownError:
-            return "An unknown error occurred."
+        case .unknownError(let error):
+            return "An unknown error occurred: \(error.localizedDescription)"
         }
     }
 }

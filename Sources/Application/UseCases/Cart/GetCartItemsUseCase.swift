@@ -11,8 +11,13 @@ public class GetCartItemsUseCase {
     public func execute(cartId: UUID) async throws -> [Ingredient] {
         do {
             return try await repository.getItems(cartId: cartId)
-        } catch {
-            throw RecipeAppError.dataLoadingError(underlying: error)
+        }
+        catch let domainError as DomainError {
+            throw domainError
+        }
+        catch {
+            throw RecipeAppError.unknownError(underlying: error)
         }
     }
 }
+
