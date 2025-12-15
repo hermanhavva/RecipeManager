@@ -7,8 +7,14 @@ public class CreateRecipeUseCase {
     public init(repository: RecipeRepositoryType) {
         self.repository = repository
     }
+    
     public func execute(dto: CreateRecipeDTO) async throws {
-        let newRecipe = try RecipeMapper.map(dto: dto)
-        try await repository.add(recipe: newRecipe)
+        let newRecipe = RecipeMapper.map(dto: dto)
+        try newRecipe.validate()
+        do {
+            try await repository.add(recipe: newRecipe)
+        } catch {
+            throw RecipeAppError.dataLoadingError(underlying: error)
+        }
     }
 }

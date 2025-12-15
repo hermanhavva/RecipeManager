@@ -33,4 +33,26 @@ public struct Recipe: Identifiable, Codable, Equatable {
         self.isFavorite = isFavorite
         self.createdAt = createdAt
     }
+    public func validate() throws {
+            
+        guard !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw RecipeDomainError.invalidTitle
+        }
+            
+        guard calories > 0 else {
+            throw RecipeDomainError.invalidCalories
+        }
+            
+        guard cookingTime > 0 else {
+            throw RecipeDomainError.invalidCookingTime
+        }
+            
+        guard servings > 0 else {
+            throw RecipeDomainError.invalidServings
+        }
+            
+        guard !ingredients.isEmpty else {
+            throw RecipeDomainError.emptyIngredients
+        }
+    }
 }
