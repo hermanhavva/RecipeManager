@@ -29,6 +29,6 @@ xcodebuild \
   -sdk iphonesimulator \
   -destination "platform=iOS Simulator,name=$TARGET_DEVICE" \
   clean test \
-  | xcbeatify
+  | xcbeautify
 
 echo "✅ Build and tests completed successfully!"
