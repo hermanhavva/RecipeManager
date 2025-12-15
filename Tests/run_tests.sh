@@ -1,13 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "🔄 Cleaning..."
-swift package clean
-
-echo "🔨 Building..."
-swift build
-
-echo "🧪 Running tests..."
-swift test
+xcodebuild \
+  -scheme RecipeEngine \
+  -sdk iphonesimulator \
+  -destination "platform=iOS Simulator,name=iPhone 16,OS=18.4" \
+  clean test
 
 echo "✅ Build and tests completed successfully!"
