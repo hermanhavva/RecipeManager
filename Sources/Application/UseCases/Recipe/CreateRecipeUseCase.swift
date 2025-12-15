@@ -9,7 +9,7 @@ public class CreateRecipeUseCase {
     }
     
     public func execute(dto: CreateRecipeDTO) async throws {
-        let newRecipe = RecipeMapper.map(dto: dto)
+        let newRecipe = RecipeMapper.mapToEntity(dto: dto)
         try newRecipe.validate()
         do {
             try await repository.add(recipe: newRecipe)

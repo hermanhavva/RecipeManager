@@ -12,4 +12,16 @@ public struct Ingredient: Identifiable, Codable, Equatable {
         self.amount = amount
         self.unit = unit
     }
+    
+    public func validate() throws {
+        guard !name.isEmpty else {
+            throw ValidationError("Name cannot be empty")
+        }
+        guard !amount.isEmpty else {
+            throw ValidationError("Amount cannot be empty")
+        }
+        guard !unit.isEmpty else {
+            throw ValidationError("Unit cannot be empty")
+        }
+    }
 }

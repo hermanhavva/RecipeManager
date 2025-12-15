@@ -14,14 +14,23 @@ public struct Recipe: Identifiable, Codable, Equatable {
     public let title: String
     public let description: String
     public let calories: Int
-    public let cookingTime: Int
+    public let cookingTime: TimeInterval
     public let servings: Int
     public let category: RecipeCategory
     public let ingredients: [Ingredient]
     public var isFavorite: Bool
     public let createdAt: Date
     
-    public init(id: UUID = UUID(), title: String, description: String, calories: Int, cookingTime: Int, servings: Int, category: RecipeCategory,ingredients: [Ingredient], isFavorite: Bool = false, createdAt: Date = Date()) {
+    public init(id: UUID = UUID(),
+                title: String,
+                description: String,
+                calories: Int,
+                cookingTime: TimeInterval,
+                servings: Int,
+                category: RecipeCategory,
+                ingredients: [Ingredient],
+                isFavorite: Bool = false,
+                createdAt: Date = Date()) {
         self.id = id
         self.title = title
         self.description = description

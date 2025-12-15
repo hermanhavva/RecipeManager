@@ -2,7 +2,7 @@ import Foundation
 import Domain
 
 public struct RecipeMapper {
-    public static func map(dto: CreateRecipeDTO) -> Recipe {
+    public static func mapToEntity(from dto: CreateRecipeDTO) -> Recipe {
         let timeInMinutes = Int(dto.cookingTime / 60)
         
         return Recipe(
