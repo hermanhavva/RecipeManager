@@ -9,6 +9,8 @@ class RecipeFavoriteViewController: UIViewController {
     static let buttonBackgroundColor: UIColor = .init(red: 181/255, green: 227/255, blue: 194/255, alpha: 1)
     static let buttonCornerRadius: CGFloat = 20
     
+    static let tableCellHeight: CGFloat = 170
+    
     // MARK: UI
     //TODO: connect to a ViewModel and get real data
     let tableView = UITableView()
@@ -65,7 +67,12 @@ extension RecipeFavoriteViewController: UITableViewDelegate, UITableViewDataSour
     }
     
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        170
+        RecipeFavoriteViewController.tableCellHeight
+    }
+    
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        show(RecipeDisplayViewController(recipe: "Приклад довгої назви рецепту на два рядки"), sender: self)
+        self.tableView.deselectRow(at: indexPath, animated: true)
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

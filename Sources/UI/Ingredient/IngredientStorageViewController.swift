@@ -6,6 +6,8 @@ final class IngredientStorageViewController: UIViewController {
     
     static let labelFont: UIFont = .systemFont(ofSize: 30, weight: .regular)
     
+    let ingredientTableDelegate = IngredientTableDelegate()
+    
     let tableView = UITableView()
     
     let label: UILabel = {
@@ -60,32 +62,19 @@ final class IngredientStorageViewController: UIViewController {
             $0.top.equalTo(addIngredientButton.snp.bottom).offset(baseOffset)
         }
         
-        tableView.register(IngredientTableCell.self, forCellReuseIdentifier: "IngredientTableCell")
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.separatorStyle = .none
-    }
-}
-
-//TODO: Replace fixed values
-extension IngredientStorageViewController: UITableViewDelegate, UITableViewDataSource {
-    
-    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        3
-    }
-    
-    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        60
-    }
-    
-    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "IngredientTableCell") as? IngredientTableCell else {
-            return UITableViewCell()
+        ingredientTableDelegate.cellForRowAt = { tableView, indexPath in
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "IngredientTableCell") as? IngredientTableCell else {
+                return UITableViewCell()
+            }
+            
+            cell.setup(with: "Приклад інгредієнту")
+            
+            return cell
         }
         
-        cell.setup(with: "Приклад інгредієнту")
-        
-        return cell
-        
+        tableView.register(IngredientTableCell.self, forCellReuseIdentifier: "IngredientTableCell")
+        tableView.delegate = ingredientTableDelegate
+        tableView.dataSource = ingredientTableDelegate
+        tableView.separatorStyle = .none
     }
 }
