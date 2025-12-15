@@ -8,3 +8,4 @@ public protocol CartRepositoryType {
     func remove(id: UUID, from cartId: UUID) async throws
     func clear(cartId: UUID) async throws
 }
+
