@@ -5,30 +5,34 @@ import XCTest
 final class CartUseCaseTests: XCTestCase {
     
     var mockCartRepo: MockCartRepository!
+    var mockRecipeRepo: MockRecipeRepository!
     let testCartId = UUID()
     
     override func setUp() {
         super.setUp()
         mockCartRepo = MockCartRepository()
+        mockRecipeRepo = MockRecipeRepository()
     }
     
     func test_addRecipeToCart_addsAllIngredients() async throws {
-        let useCase = AddRecipeIngredientsToCartUseCase(repository: mockCartRepo)
+        let useCase = AddRecipeIngredientsToCartUseCase(cartRepository: mockCartRepo, recipeRepository: mockRecipeRepo)
         
-        let ing1 = Ingredient(name: "Milk", amount: "1", unit: "l")
-        let ing2 = Ingredient(name: "Eggs", amount: "2", unit: "pc")
+        let ing1 = Ingredient(name: "Milk", amount: 1, unit: "l")
+        let ing2 = Ingredient(name: "Eggs", amount: 2, unit: "pc")
         
         let recipe = Recipe(
             title: "Pancakes",
             description: "",
             calories: 100,
-            cookingTime: 10,
+            cookingTime: TimeInterval(10),
             servings: 2,
             category: .breakfast,
             ingredients: [ing1, ing2]
         )
         
-        try await useCase.execute(recipe: recipe, to: testCartId)
+        try await mockRecipeRepo.add(recipe: recipe)
+        
+        try await useCase.execute(recipeId: recipe.id, to: testCartId)
         
         let itemsInCart = mockCartRepo.getItemsInMock(cartId: testCartId)
         
@@ -39,8 +43,9 @@ final class CartUseCaseTests: XCTestCase {
     
     func test_removeFromCart_removesSpecificItem() async throws {
         let useCase = RemoveFromCartUseCase(repository: mockCartRepo)
-        let item1 = Ingredient(id: UUID(), name: "Milk", amount: "1", unit: "l")
-        let item2 = Ingredient(id: UUID(), name: "Bread", amount: "1", unit: "pc")
+        
+        let item1 = Ingredient(id: UUID(), name: "Milk", amount: 1, unit: "l")
+        let item2 = Ingredient(id: UUID(), name: "Bread", amount: 1, unit: "pc")
         
         try await mockCartRepo.add(ingredients: [item1, item2], to: testCartId)
         
@@ -54,7 +59,7 @@ final class CartUseCaseTests: XCTestCase {
     
     func test_getCartItems_returnsRepoItems() async throws {
         let useCase = GetCartItemsUseCase(repository: mockCartRepo)
-        let item = Ingredient(name: "Test", amount: "1", unit: "")
+        let item = Ingredient(name: "Test", amount: 1, unit: "")
         
         try await mockCartRepo.add(ingredient: item, to: testCartId)
         

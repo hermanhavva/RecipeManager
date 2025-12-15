@@ -2,7 +2,7 @@ import Foundation
 import Domain
 
 public struct IngredientMapper{
-    public static func mapToEntity(from dto: CreateIngredientDTO) -> Ingredient {
+    public static func mapToEntity(from dto: CreateIngredientDTO) throws -> Ingredient {
         
         let ingredient = Ingredient(
             id: UUID(),
@@ -11,7 +11,7 @@ public struct IngredientMapper{
             unit: dto.unit
         )
         
-        ingredient.validate()
+        try ingredient.validate()
         
         return ingredient
     }

@@ -9,12 +9,16 @@ public class AddIngredientsToCartUseCase {
     }
     
     public func execute(ingredientDto: CreateIngredientDTO, to cartId: UUID) async throws {
-        let ingredientsToAdd = [IngredientMapper.mapToEntity(from: ingredientDto)]
-        
+
         do {
+            let ingredientsToAdd = try [IngredientMapper.mapToEntity(from: ingredientDto)]
             try await repository.add(ingredients: ingredientsToAdd, to: cartId)
-        } catch {
-            throw RecipeAppError.dataLoadingError(underlying: error)
+        }
+        catch let domainError as DomainError {
+            throw domainError
+        }
+        catch {
+            throw RecipeAppError.unknownError(underlying: error)
         }
     }
 }

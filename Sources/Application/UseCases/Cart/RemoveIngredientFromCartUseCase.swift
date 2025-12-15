@@ -1,4 +1,5 @@
 import Foundation
+import Domain
 
 public class RemoveFromCartUseCase {
     private let repository: CartRepositoryType
@@ -8,11 +9,14 @@ public class RemoveFromCartUseCase {
     }
     
     public func execute(id: UUID, from cartId: UUID) async throws {
-
         do {
-            return try await repository.remove(id: id, from: cartId)
-        } catch {
-            throw RecipeAppError.dataLoadingError(underlying: error)
+            try await repository.remove(id: id, from: cartId)
+        }
+        catch let domainError as DomainError {
+            throw domainError
+        }
+        catch {
+            throw RecipeAppError.unknownError(underlying: error)
         }
     }
 }

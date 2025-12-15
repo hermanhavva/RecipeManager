@@ -13,12 +13,12 @@ final class RecipeUseCaseTests: XCTestCase {
     
     func test_createRecipe_success() async throws {
         let useCase = CreateRecipeUseCase(repository: mockRepo)
-        let ingredients = [Ingredient(name: "A", amount: "1", unit: "kg")]
+        let ingredients = [Ingredient(name: "A", amount: 1, unit: "kg")]
         let dto = CreateRecipeDTO(
             title: "Test Recipe",
             description: "Short desc",
-            calories: "100",
-            cookingTime: "10",
+            calories: 100,
+            cookingTime: 300,
             servings: "2",
             category: .lunch,
             ingredients: ingredients
@@ -38,18 +38,18 @@ final class RecipeUseCaseTests: XCTestCase {
         let dto = CreateRecipeDTO(
             title: "",
             description: "D",
-            calories: "100",
-            cookingTime: "10",
+            calories: 100,
+            cookingTime: 300,
             servings: "2",
             category: .lunch,
-            ingredients: [Ingredient(name: "A", amount: "1", unit: "kg")]
+            ingredients: [Ingredient(name: "A", amount: 1, unit: "kg")]
         )
         
         do {
             try await useCase.execute(dto: dto)
             XCTFail("Should fail")
-        } catch let error as RecipeAppError {
-            XCTAssertEqual(error, .invalidTitle)
+        } catch let error as DomainError {
+            XCTAssertTrue(error is RecipeConstraintValidationError)
         } catch {
             XCTFail("Wrong error type")
         }
@@ -61,19 +61,19 @@ final class RecipeUseCaseTests: XCTestCase {
         let dto = CreateRecipeDTO(
             title: "Valid",
             description: "D",
-            calories: "0",
-            cookingTime: "10",
+            calories: 0,
+            cookingTime: 10,
             servings: "2",
             category: .lunch,
-            ingredients: [Ingredient(name: "A", amount: "1", unit: "kg")]
+            ingredients: [Ingredient(name: "A", amount: 1, unit: "kg")]
         )
         
         do {
             try await useCase.execute(dto: dto)
             XCTFail("Should fail")
-        } catch let error as RecipeAppError {
-            XCTAssertEqual(error, .invalidCalories)
-        } catch {
+        } catch let error as DomainError {
+            XCTAssertTrue(error is RecipeConstraintValidationError)
+        } catch let error {
             XCTFail("Wrong error type")
         }
     }

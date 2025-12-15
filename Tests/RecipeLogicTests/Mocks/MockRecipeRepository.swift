@@ -5,8 +5,12 @@ import Foundation
 class MockRecipeRepository: RecipeRepositoryType {
     var items: [Recipe] = []
     
-    func fetchRecipes() async throws -> [Recipe] {
+    func get() async throws -> [Recipe] {
         return items
+    }
+    
+    func getById(id: UUID) async throws -> Recipe? {
+        return items.first(where: { $0.id == id })
     }
     
     func add(recipe: Recipe) async throws {

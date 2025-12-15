@@ -9,12 +9,15 @@ public class CreateRecipeUseCase {
     }
     
     public func execute(dto: CreateRecipeDTO) async throws {
-        let newRecipe = RecipeMapper.mapToEntity(dto: dto)
-        try newRecipe.validate()
         do {
+            let newRecipe = try RecipeMapper.mapToEntity(from: dto)
             try await repository.add(recipe: newRecipe)
-        } catch {
-            throw RecipeAppError.dataLoadingError(underlying: error)
+        }
+        catch let error as DomainError {
+            throw error
+        }
+        catch {
+            throw RecipeAppError.unknownError(underlying: error)
         }
     }
 }

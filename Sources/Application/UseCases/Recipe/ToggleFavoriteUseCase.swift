@@ -10,10 +10,10 @@ public class ToggleFavoriteUseCase {
     
     public func execute(recipeId: UUID) async throws {
         do {
-            let recipes = try await repository.fetchRecipes()
+            let recipes = try await repository.get()
             
             guard let index = recipes.firstIndex(where: { $0.id == recipeId }) else {
-                throw RecipeDomainError.recipeNotFound
+                throw RecipeNotFoundError(reason: "Recipe with id: \(recipeId) not found")
             }
             
             var recipeToUpdate = recipes[index]
@@ -21,10 +21,12 @@ public class ToggleFavoriteUseCase {
             
             try await repository.update(recipe: recipeToUpdate)
             
-        } catch let domainError as RecipeDomainError {
+        }
+        catch let domainError as DomainError {
             throw domainError
-        } catch {
-            throw RecipeAppError.dataLoadingError(underlying: error)
+        }
+        catch {
+            throw RecipeAppError.unknownError(underlying: error)
         }
     }
 }

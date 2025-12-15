@@ -3,26 +3,38 @@ import Foundation
 import Domain
 
 public class AddRecipeIngredientsToCartUseCase {
-    private let repository: CartRepositoryType
+    private let cartRepository: CartRepositoryType
+    private let recipeRepository: RecipeRepositoryType
     
-    public init(repository: CartRepositoryType) {
-        self.repository = repository
+    public init(cartRepository: CartRepositoryType, recipeRepository: RecipeRepositoryType) {
+        self.cartRepository = cartRepository
+        self.recipeRepository = recipeRepository
     }
     
-    public func execute(recipe: Recipe, to cartId: UUID) async throws {
-        let ingredientsForCart = recipe.ingredients.map { original in
-            Ingredient(
-                id: UUID(),
-                name: original.name,
-                amount: original.amount,
-                unit: original.unit
-            )
-        }
-        
+    public func execute(recipeId: UUID, to cartId: UUID) async throws {
         do {
-            try await repository.add(ingredients: ingredientsForCart, to: cartId)
-        } catch {
-            throw RecipeAppError.dataLoadingError(underlying: error)
+            guard let recipe = try await recipeRepository.getById(id: recipeId) else {
+                throw RecipeNotFoundError(reason: "The recipe with id \(recipeId) does not exist")
+            }
+            
+            let ingredientsToAdd = recipe.ingredients.map { original in
+                Ingredient(
+                    id: UUID(),
+                    name: original.name,
+                    amount: original.amount,
+                    unit: original.unit
+                )
+            }
+            
+            try await cartRepository.add(ingredients: ingredientsToAdd, to: cartId)
+            
+        }
+        catch let domainError as DomainError {
+            throw domainError
+            
+        }
+        catch {
+            throw RecipeAppError.unknownError(underlying: error)
         }
     }
 }
