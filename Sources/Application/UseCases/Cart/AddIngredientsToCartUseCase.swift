@@ -17,6 +17,9 @@ public class AddIngredientsToCartUseCase {
         catch let domainError as DomainError {
             throw domainError
         }
+        catch let error as RecipeAppError {
+            throw error
+        }
         catch {
             throw RecipeAppError.unknownError(underlying: error)
         }

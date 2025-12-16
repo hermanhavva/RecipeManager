@@ -1,4 +1,5 @@
 import Foundation
+import Application
 import SnapKit
 import UIKit
 
@@ -67,7 +68,7 @@ final class IngredientStorageViewController: UIViewController {
                 return UITableViewCell()
             }
             
-            cell.setup(with: "Приклад інгредієнту")
+            cell.setup(with: ViewIngredientDTO(name: "Приклад інгредієнту", amount: 100, unit:"mg"))
             
             return cell
         }
