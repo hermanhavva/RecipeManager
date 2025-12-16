@@ -24,6 +24,9 @@ jobs:
         with:
           xcode-version: 'latest-stable'
           
+      - name: Install xcbeautify
+        run: brew install xcbeautify
+    
       - name: Make script executable
         run: chmod +x ./Tests/run_tests.sh
 

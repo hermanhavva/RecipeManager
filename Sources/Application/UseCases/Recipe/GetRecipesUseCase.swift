@@ -10,10 +10,16 @@ public class GetRecipesUseCase {
     
     public func execute() async throws -> [Recipe] {
         do {
-            let recipes = try await repository.fetchRecipes()
+            let recipes = try await repository.getAll()
+            
             return recipes.sorted { $0.createdAt > $1.createdAt }
-        } catch {
-            throw RecipeAppError.dataLoadingError(underlying: error)
         }
+        catch let error as DomainError {
+            throw error
+        }
+        catch {
+            throw RecipeAppError.unknownError(underlying: error)
+        }
+        
     }
 }
