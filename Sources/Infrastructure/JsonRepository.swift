@@ -21,6 +21,19 @@ public actor JSONRepository<T: Codable & Identifiable>: GenericRepositoryType wh
     
     // MARK: - Internal Helpers
     
+    private func ensureDirectoryExists() throws {
+        let folderURL = fileURL.deletingLastPathComponent()
+        let fileManager = FileManager.default
+        
+        if !fileManager.fileExists(atPath: folderURL.path) {
+            try fileManager.createDirectory(
+                at: folderURL,
+                withIntermediateDirectories: true,
+                attributes: nil
+            )
+        }
+    }
+    
     private func loadData() throws -> [T] {
         // Return memory cache if available for performance
         if let cache = cache {
@@ -42,14 +55,18 @@ public actor JSONRepository<T: Codable & Identifiable>: GenericRepositoryType wh
         }
     }
     
+    
     private func saveData(_ items: [T]) throws {
         do {
+            try ensureDirectoryExists()
+        
             let data = try jsonEncoder.encode(items)
             try data.write(to: fileURL)
-            self.cache = items // update cache
+            self.cache = items
         }
         catch {
-            throw RecipeAppError.dataSavingError(underlying: error)
+            
+            throw RecipeAppError.dataLoadingError(underlying: error)
         }
     }
     
