@@ -70,19 +70,37 @@ class RecipeAddViewController: UIViewController {
         return view
     }()
     
-    let ingredientName: UITextField = {
+    let ingredient1Name: UITextField = {
         let view = UITextField()
         view.placeholder = "Інгредієнт"
         return applyTextStyle(view, .left)
     }()
     
-    let amount: UITextField = {
+    let amount1: UITextField = {
         let view = UITextField()
         view.placeholder = "К-сть"
         return applyTextStyle(view, .left)
     }()
     
-    let unit: UITextField = {
+    let unit1: UITextField = {
+        let view = UITextField()
+        view.placeholder = "г/мл/шт"
+        return applyTextStyle(view, .left)
+    }()
+    
+    let ingredient2Name: UITextField = {
+        let view = UITextField()
+        view.placeholder = "Інгредієнт"
+        return applyTextStyle(view, .left)
+    }()
+    
+    let amount2: UITextField = {
+        let view = UITextField()
+        view.placeholder = "К-сть"
+        return applyTextStyle(view, .left)
+    }()
+    
+    let unit2: UITextField = {
         let view = UITextField()
         view.placeholder = "г/мл/шт"
         return applyTextStyle(view, .left)
@@ -103,7 +121,19 @@ class RecipeAddViewController: UIViewController {
     }
     
     func setupActions() {
+        addRecipeButton.addTarget(self, action: #selector(addRecipe), for: .touchUpInside)
+    }
+    
+    @objc func addRecipe() {
         //TODO: Here add a viewModel integration to save the recipe
+        let recipeName = recipeNameTextField.text
+        let calories = calories.text
+        let time = timeTaken.text
+        let servings = forPeople.text
+        let ingredient1 = [ingredient1Name.text, amount1.text, unit1.text]
+        let ingredient2 = [ingredient2Name.text, amount2.text, unit2.text]
+        let description = recipeDescriptionTextView.text
+        // Pass all these as parameters for recipe
     }
     
     func setupUI() {
@@ -115,9 +145,12 @@ class RecipeAddViewController: UIViewController {
         view.addSubview(forPeople)
         view.addSubview(descriptionLabel)
         view.addSubview(recipeDescriptionTextView)
-        view.addSubview(ingredientName)
-        view.addSubview(amount)
-        view.addSubview(unit)
+        view.addSubview(ingredient1Name)
+        view.addSubview(amount1)
+        view.addSubview(unit1)
+        view.addSubview(ingredient2Name)
+        view.addSubview(amount2)
+        view.addSubview(unit2)
         
         let topBaseOffset: Double = 50
         
@@ -159,26 +192,44 @@ class RecipeAddViewController: UIViewController {
             $0.trailing.equalToSuperview().inset(statsHorizontal)
         }
         
-        ingredientName.snp.makeConstraints {
+        ingredient1Name.snp.makeConstraints {
             $0.top.equalTo(calories.snp.bottom).offset(topBaseOffset)
             $0.leading.equalToSuperview().offset(10)
             $0.width.equalToSuperview().multipliedBy(0.5)
         }
         
-        amount.snp.makeConstraints {
+        amount1.snp.makeConstraints {
             $0.top.equalTo(calories.snp.bottom).offset(topBaseOffset)
-            $0.leading.equalTo(ingredientName.snp.trailing).offset(10)
+            $0.leading.equalTo(ingredient1Name.snp.trailing).offset(10)
             $0.width.equalToSuperview().multipliedBy(0.2)
         }
         
-        unit.snp.makeConstraints {
+        unit1.snp.makeConstraints {
             $0.top.equalTo(calories.snp.bottom).offset(topBaseOffset)
-            $0.leading.equalTo(amount.snp.trailing).offset(10)
+            $0.leading.equalTo(amount1.snp.trailing).offset(10)
+            $0.width.equalToSuperview().multipliedBy(0.2)
+        }
+        
+        ingredient2Name.snp.makeConstraints {
+            $0.top.equalTo(ingredient1Name.snp.bottom).offset(topBaseOffset)
+            $0.leading.equalToSuperview().offset(10)
+            $0.width.equalToSuperview().multipliedBy(0.5)
+        }
+        
+        amount2.snp.makeConstraints {
+            $0.top.equalTo(ingredient1Name.snp.bottom).offset(topBaseOffset)
+            $0.leading.equalTo(ingredient1Name.snp.trailing).offset(10)
+            $0.width.equalToSuperview().multipliedBy(0.2)
+        }
+        
+        unit2.snp.makeConstraints {
+            $0.top.equalTo(ingredient1Name.snp.bottom).offset(topBaseOffset)
+            $0.leading.equalTo(amount1.snp.trailing).offset(10)
             $0.width.equalToSuperview().multipliedBy(0.2)
         }
         
         descriptionLabel.snp.makeConstraints {
-            $0.top.equalTo(ingredientName.snp.bottom).offset(topBaseOffset)
+            $0.top.equalTo(ingredient2Name.snp.bottom).offset(topBaseOffset)
             $0.centerX.equalToSuperview()
         }
         
