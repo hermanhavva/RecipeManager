@@ -10,6 +10,16 @@ func createTabBarController() -> UITabBarController{
     let recipeRepository = RecipeJsonRepository()
     let cartRepository = CartJsonRepository()
     
+    //MARK: Create a Cart
+    Task {
+        do {
+            try await cartRepository.create(cart: Cart(id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!, ingredients: []))
+        }
+        catch _ as CartConflictError{}//After first creation this will always be called
+        catch{print("Failed to create a cart: \(error)")}
+    }
+    
+    
     // MARK: Create Use Cases
     let getAllRecipesUseCase = GetRecipesUseCase(repository: recipeRepository)
     let getFavoritesUseCase = GetFavouriteRecipesUseCase(repository: recipeRepository)

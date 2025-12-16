@@ -59,11 +59,46 @@ final class IngredientStorageViewController: UIViewController {
     }
     
     @objc func addIngredient() {
-        //TODO: Get user input
-        let name = "Ingredient"
-        let amount = 1
-        let unit = "kg"
-        viewModel.addIngredientsToCart(name: name, amount: amount, unit: unit)
+        let alert = UIAlertController(title: "Add Ingredient", message: "Enter ingredient to add", preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.placeholder = "Ingredient"
+            textField.autocorrectionType = .no
+            textField.autocapitalizationType = .words
+        }
+        alert.addTextField { textField in
+            textField.placeholder = "Amount"
+            textField.autocorrectionType = .no
+            textField.autocapitalizationType = .words
+        }
+        alert.addTextField { textField in
+            textField.placeholder = "Unit"
+            textField.autocorrectionType = .no
+            textField.autocapitalizationType = .words
+        }
+        
+        let okAction = UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+            guard
+                let nameField = alert.textFields?[0],
+                let amountField = alert.textFields?[1],
+                let unitField = alert.textFields?[2],
+                let name = nameField.text,
+                let amount = Int(amountField.text ?? ""),
+                let unit = unitField.text
+            else {
+                print("Incorrect input")
+                return
+            }
+            
+            self?.viewModel.addIngredientsToCart(name: name, amount: amount, unit: unit)
+            self?.setupData()
+        }
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+
+        alert.addAction(okAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true, completion: nil)
     }
     
     func setupData() {
@@ -77,6 +112,13 @@ final class IngredientStorageViewController: UIViewController {
             .receive(on: RunLoop.main)
             .sink { [weak self] message in
                 self?.showAlert(title: "Помилка", message: message)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$ingredients
+            .receive(on: RunLoop.main)
+            .sink { [weak self] newValue in
+                self?.tableView.reloadData()
             }
             .store(in: &cancellables)
     }

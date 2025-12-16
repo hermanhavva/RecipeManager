@@ -17,8 +17,8 @@ public class IngredientStorageViewModel: ObservableObject {
     public func getCartItems(){
         Task {
             do {
-                var entities = try await getCartItemsUseCase.execute(cartId: defaultCartId)
-                
+                let entities = try await getCartItemsUseCase.execute(cartId: defaultCartId)
+                ingredients = []
                 for ingredient in entities {
                     ingredients.append(IngredientMapper.mapToViewDTO(from: ingredient))
                 }
