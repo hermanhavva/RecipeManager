@@ -42,7 +42,7 @@ let package = Package(
         // Depends on Presentation, SnapKit and Application for Mocks
             .target(
                 name: "UI",
-                dependencies: ["Presentation", "Application", "SnapKit"]
+                dependencies: ["Presentation", "Application", "Domain", "Infrastructure", "SnapKit"]
             ),
         .testTarget(
             name: "Tests",

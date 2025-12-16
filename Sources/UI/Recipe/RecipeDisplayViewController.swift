@@ -167,9 +167,13 @@ About those ingredients
         }
                     
             if let ingredient = self?.viewModel.recipe.ingredients[indexPath.row] {
-                cell.name.text = ingredient.name
-                cell.count.text = "\(ingredient.amount) \(ingredient.unit)"
-                cell.setup(with: ingredient)
+                
+                let dto = ViewIngredientDTO(
+                    name: ingredient.name,
+                    amount: ingredient.amount,
+                    unit: ingredient.unit
+                )
+                cell.setup(with: dto)
             }
                     
         return cell
@@ -207,18 +211,18 @@ About those ingredients
 }
 
 #if DEBUG
-class PreviewCartRepository: CartRepositoryType {
-    func getItems(cartId: UUID) async throws -> [Ingredient] { return [] }
-    func add(ingredients: [Ingredient], to cartId: UUID) async throws {}
-    func add(ingredient: Ingredient, to cartId: UUID) async throws {}
-    func remove(id: UUID, from cartId: UUID) async throws {}
-    func clear(cartId: UUID) async throws {}
-}
+//class PreviewCartRepository: CartRepositoryType {
+//    func getItems(cartId: UUID) async throws -> [Ingredient] { return [] }
+//    func add(ingredients: [Ingredient], to cartId: UUID) async throws {}
+//    func add(ingredient: Ingredient, to cartId: UUID) async throws {}
+//    func remove(id: UUID, from cartId: UUID) async throws {}
+//    func clear(cartId: UUID) async throws {}
+//}
 
 #Preview {
     let ingredients = [
-        Ingredient(name: "Milk", amount: "1", unit: "l"),
-        Ingredient(name: "Eggs", amount: "2", unit: "pc")
+        Ingredient(name: "Milk", amount: 1, unit: "l"),
+        Ingredient(name: "Eggs", amount: 2, unit: "pc")
     ]
     let recipe = Recipe(
         title: "Pancakes",
@@ -230,8 +234,12 @@ class PreviewCartRepository: CartRepositoryType {
         ingredients: ingredients
     )
 
-    let mockRepo = PreviewCartRepository()
-    let useCase = AddRecipeIngredientsToCartUseCase(repository: mockRepo)
+    let mockCartRepo = MockCartRepository()
+    let mockRecipeRepo = MockRecipeRepository(recipes: [recipe])
+    
+//    let mockRepo = PreviewCartRepository()
+    let useCase = AddRecipeIngredientsToCartUseCase(cartRepository: mockCartRepo, recipeRepository: mockRecipeRepo)
+    
     let viewModel = RecipeDisplayViewModel(recipe: recipe, addRecipeToCartUseCase: useCase)
 
     RecipeDisplayViewController(viewModel: viewModel).asPreview()

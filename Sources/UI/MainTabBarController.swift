@@ -1,12 +1,54 @@
 import Foundation
 import SwiftUI
+import Application
+import Domain
+import Presentation
+import Infrastructure
 
 func createTabBarController() -> UITabBarController{
-    let tabBarController = UITabBarController()
+    // MARK: Create Infrastructure
+    let recipeRepository = RecipeJsonRepository()
+    let cartRepository = CartJsonRepository()
     
-    let recipeMainViewController = RecipeMainViewController()
+    // MARK: Create Use Cases
+    let getAllRecipesUseCase = GetRecipesUseCase(repository: recipeRepository)
+    let getFavoritesUseCase = GetFavouriteRecipesUseCase(repository: recipeRepository)
+    let addIngredientsUseCase = AddRecipeIngredientsToCartUseCase(cartRepository: cartRepository, recipeRepository: recipeRepository)
+    
+    // MARK: Define the "Detail Screen Factory"
+    let makeDetailScreen: @MainActor (Recipe) -> UIViewController = { recipe in
+        
+        let detailViewModel = RecipeDisplayViewModel(
+            recipe: recipe,
+            addRecipeToCartUseCase: addIngredientsUseCase
+        )
+        return RecipeDisplayViewController(viewModel: detailViewModel)
+    }
+    
+    // MARK: Create ViewModels
+    // Strategy for Main Screen: "Get All"
+    let mainViewModel = RecipeListViewModel(fetchStrategy: {
+        try await getAllRecipesUseCase.execute()
+    })
+    
+    // Strategy for Favorites Screen: "Get Favorites"
+    let favoriteViewModel = RecipeListViewModel(fetchStrategy: {
+        try await getFavoritesUseCase.execute()
+    })
+    
+    let recipeMainViewController = RecipeMainViewController(viewModel: mainViewModel)
+    // inject factory
+    recipeMainViewController.makeDetailViewController = makeDetailScreen
+    
+    let recipeFavoriteViewController = RecipeFavoriteViewController(viewModel: favoriteViewModel)
+    // inject factory
+    recipeFavoriteViewController.makeDetailViewController = makeDetailScreen
+    
     let ingredientStorageViewController = IngredientStorageViewController()
-    let recipeFavoriteViewController = RecipeFavoriteViewController()
+    
+    
+    // MARK: Setup Navigation & Tab Bar
+    let tabBarController = UITabBarController()
     
     let recipeMainNav = UINavigationController(rootViewController: recipeMainViewController)
     let ingrStorageNav = UINavigationController(rootViewController: ingredientStorageViewController)
@@ -18,11 +60,9 @@ func createTabBarController() -> UITabBarController{
     ingrStorageNav.tabBarItem = UITabBarItem(
         title: "", image: UIImage(systemName: "cart"), tag: 1
     )
-    // Stub
     recipeFavNav.tabBarItem = UITabBarItem(
         title: "", image: UIImage(systemName: "heart"), tag: 2
     )
-    //
     
     tabBarController.viewControllers = [
         recipeMainNav,
@@ -30,8 +70,10 @@ func createTabBarController() -> UITabBarController{
         recipeFavNav
     ]
     
+    // Custom Tab Bar styling
     tabBarController.setValue(MainTabBar(), forKey: "tabBar")
     tabBarController.tabBar.backgroundColor = RecipeMainViewController.buttonBackgroundColor
+    
     return tabBarController
 }
 
