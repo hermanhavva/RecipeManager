@@ -3,12 +3,12 @@ import Domain
 import Application
 
 public class IngredientStorageViewModel: ObservableObject {
-    @Published public var ingredients: [Ingredient] = []
+    @Published public var ingredients: [ViewIngredientDTO] = []
     @Published public var errorMessage: String?
     
     private let getCartItemsUseCase: GetCartItemsUseCase
     private let addIngredientsToCartUseCase: AddIngredientsToCartUseCase
-    private let defaultCartId = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!// for now we just use default cart
+    private let defaultCartId = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
     public init(getCartItemsUseCase: GetCartItemsUseCase, addIngredientsToCartUseCase: AddIngredientsToCartUseCase) {
         self.getCartItemsUseCase = getCartItemsUseCase
         self.addIngredientsToCartUseCase = addIngredientsToCartUseCase
