@@ -9,7 +9,6 @@ public class RecipeAddViewModel {
     private let createRecipeUseCase: CreateRecipeUseCase
     
     // MARK: - Output States (Observables)
-    // We use @Published so the VC can subscribe to changes
     @Published public var isLoading: Bool = false
     @Published public var errorMessage: String? = nil
     @Published public var isSuccess: Bool = false
@@ -28,7 +27,7 @@ public class RecipeAddViewModel {
         description: String?,
         ingredientsData: [(name: String?, amount: String?, unit: String?)]
     ) {
-        // 1. Reset State
+        // reset state
         self.errorMessage = nil
         self.isSuccess = false
         self.isLoading = true
@@ -38,26 +37,21 @@ public class RecipeAddViewModel {
                 self.isLoading = false
             }
             
-            // 2. Input Validation & Conversion
+            // input validation
             guard let title = title, !title.isEmpty else {
                 self.errorMessage = "Будь ласка, введіть назву рецепту."
                 return
             }
             
-            // Convert Strings to Numbers safely
-            // defaults to 0 if invalid, validation logic in Domain will catch specific issues if needed
             let caloriesInt = Int(calories ?? "") ?? 0
             let timeInterval = TimeInterval(time ?? "") ?? 0
-            let servingsStr = servings ?? "1" // DTO expects String for servings
+            let servingsStr = servings ?? "1"
             
-            // 3. Map Ingredients
             let mappedIngredients: [CreateIngredientDTO] = ingredientsData.compactMap { (name, amount, unit) -> CreateIngredientDTO? in
                 guard let name = name, !name.isEmpty, let amount, let unit else {
                     return nil
                 }
                 
-                // Ensure you match the actual init of your Ingredient struct here
-                // based on previous context, likely similar to:
                 return CreateIngredientDTO(name: name, amount: Int(amount) ?? 0, unit: unit)
             }
             
@@ -66,8 +60,7 @@ public class RecipeAddViewModel {
                 return
             }
             
-            // 4. Create DTO
-            // Note: UI currently lacks a Category picker, defaulting to .lunch or passing a param
+            // create DTO
             let dto = CreateRecipeDTO(
                 title: title,
                 description: description ?? "",
@@ -78,11 +71,12 @@ public class RecipeAddViewModel {
                 ingredients: mappedIngredients
             )
             
-            // 5. Execute Use Case
+            
             do {
                 try await createRecipeUseCase.execute(dto: dto)
                 self.isSuccess = true
-            } catch {
+            }
+            catch {
                 self.errorMessage = error.localizedDescription
             }
         }

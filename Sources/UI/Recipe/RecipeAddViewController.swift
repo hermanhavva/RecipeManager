@@ -133,7 +133,7 @@ class RecipeAddViewController: UIViewController {
     
     // MARK: - Binding
     private func bindViewModel() {
-        // Listen for Success
+        // listen for Success
         viewModel.$isSuccess
             .receive(on: DispatchQueue.main)
             .sink { [weak self] success in
@@ -144,7 +144,6 @@ class RecipeAddViewController: UIViewController {
             }
             .store(in: &cancellables)
         
-        // Listen for Errors
         viewModel.$errorMessage
             .compactMap { $0 }
             .receive(on: DispatchQueue.main)
@@ -153,7 +152,6 @@ class RecipeAddViewController: UIViewController {
             }
             .store(in: &cancellables)
         
-        // Listen for Loading
         viewModel.$isLoading
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isLoading in
