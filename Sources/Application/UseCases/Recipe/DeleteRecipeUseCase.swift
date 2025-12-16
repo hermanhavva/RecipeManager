@@ -15,6 +15,9 @@ public class DeleteRecipeUseCase {
         catch let error as DomainError {
             throw error
         }
+        catch let error as RecipeAppError {
+            throw error
+        }
         catch {
             throw RecipeAppError.unknownError(underlying: error)
         }

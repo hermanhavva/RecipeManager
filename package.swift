@@ -39,10 +39,10 @@ let package = Package(
                 dependencies: ["Application"]
             ),
         // Contains: Views
-        // Depends on Presentation and SnapKit
+        // Depends on Presentation, SnapKit and Application for Mocks
             .target(
                 name: "UI",
-                dependencies: ["Presentation", "SnapKit"]
+                dependencies: ["Presentation", "Application", "SnapKit"]
             ),
         .testTarget(
             name: "Tests",
