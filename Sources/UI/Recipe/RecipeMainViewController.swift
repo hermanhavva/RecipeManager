@@ -1,8 +1,11 @@
 import Foundation
 import SnapKit
 import UIKit
+import Presentation
 
 class RecipeMainViewController: RecipeFavoriteViewController {
+    let recipeAddViewController = RecipeAddViewController()
+    
     let addRecipeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Додати рецепт", for: .normal)
@@ -30,8 +33,11 @@ class RecipeMainViewController: RecipeFavoriteViewController {
         addRecipeButton.addTarget(self, action: #selector(addRecipe), for: .touchUpInside)
     }
     
+    func configure(viewModel: RecipeAddViewModel) {
+        recipeAddViewController.configure(viewModel: viewModel)
+    }
+    
     @objc func addRecipe() {
-        // Open RecipeAddViewController
-        present(RecipeAddViewController(), animated: true)
+        present(recipeAddViewController, animated: true)
     }
 }

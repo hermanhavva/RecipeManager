@@ -71,8 +71,7 @@ func createTabBarController() -> UITabBarController{
     let ingrStorageNav = UINavigationController(rootViewController: ingredientStorageViewController)
     let recipeFavNav = UINavigationController(rootViewController: recipeFavoriteViewController)
     
-    let viewController = RecipeAddViewController()
-    viewController.configure(viewModel: viewModel)
+    recipeMainViewController.configure(viewModel: viewModel)
     
     recipeMainNav.tabBarItem = UITabBarItem(
         title: "", image: UIImage(systemName: "house"), tag: 0
