@@ -14,6 +14,8 @@ func createTabBarController() -> UITabBarController{
     let getAllRecipesUseCase = GetRecipesUseCase(repository: recipeRepository)
     let getFavoritesUseCase = GetFavouriteRecipesUseCase(repository: recipeRepository)
     let addIngredientsUseCase = AddRecipeIngredientsToCartUseCase(cartRepository: cartRepository, recipeRepository: recipeRepository)
+    let getCartItemsUseCase = GetCartItemsUseCase(repository: cartRepository)
+    let addIngredientsToCartUseCase = AddIngredientsToCartUseCase(repository: cartRepository)
     
     // MARK: Define the "Detail Screen Factory"
     let makeDetailScreen: @MainActor (Recipe) -> UIViewController = { recipe in
@@ -36,6 +38,8 @@ func createTabBarController() -> UITabBarController{
         try await getFavoritesUseCase.execute()
     })
     
+    let ingredientStorageViewModel = IngredientStorageViewModel(getCartItemsUseCase: getCartItemsUseCase, addIngredientsToCartUseCase: addIngredientsToCartUseCase)
+    
     let recipeMainViewController = RecipeMainViewController(viewModel: mainViewModel)
     // inject factory
     recipeMainViewController.makeDetailViewController = makeDetailScreen
@@ -44,7 +48,7 @@ func createTabBarController() -> UITabBarController{
     // inject factory
     recipeFavoriteViewController.makeDetailViewController = makeDetailScreen
     
-    let ingredientStorageViewController = IngredientStorageViewController()
+    let ingredientStorageViewController = IngredientStorageViewController(viewModel: ingredientStorageViewModel)
     
     
     // MARK: Setup Navigation & Tab Bar
