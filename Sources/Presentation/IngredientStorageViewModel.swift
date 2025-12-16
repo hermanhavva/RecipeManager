@@ -17,7 +17,12 @@ public class IngredientStorageViewModel: ObservableObject {
     public func getCartItems(){
         Task {
             do {
-                try ingredients = await getCartItemsUseCase.execute(cartId: defaultCartId)
+                var entities = try await getCartItemsUseCase.execute(cartId: defaultCartId)
+                
+                for ingredient in entities {
+                    ingredients.append(IngredientMapper.mapToViewDTO(from: ingredient))
+                }
+              
             }
             catch let error as LocalizedError {
                 self.errorMessage = error.errorDescription

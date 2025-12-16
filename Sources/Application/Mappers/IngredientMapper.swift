@@ -15,4 +15,11 @@ public struct IngredientMapper{
         
         return ingredient
     }
+    
+    public static func mapToViewDTO(from entity: Ingredient) -> ViewIngredientDTO {
+        return ViewIngredientDTO(
+            name: entity.name,
+            amount: entity.amount,
+            unit: entity.unit)
+    }
 }
