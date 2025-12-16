@@ -30,7 +30,7 @@ final class CartUseCaseTests: XCTestCase {
             ingredients: [ing1, ing2]
         )
         
-        try await mockRecipeRepo.add(recipe: recipe)
+        try await mockRecipeRepo.create(recipe: recipe)
         
         try await useCase.execute(recipeId: recipe.id, to: testCartId)
         

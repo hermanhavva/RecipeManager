@@ -30,7 +30,7 @@ let package = Package(
         // Depends on domain protocols
             .target(
                 name: "Infrastructure",
-                dependencies: ["Domain"]
+                dependencies: ["Application", "Domain"]
             ),
         // Contains: ViewModels, State Objects
         // Depends on Application

@@ -11,7 +11,7 @@ public class CreateRecipeUseCase {
     public func execute(dto: CreateRecipeDTO) async throws {
         do {
             let newRecipe = try RecipeMapper.mapToEntity(from: dto)
-            try await repository.add(recipe: newRecipe)
+            try await repository.create(recipe: newRecipe)
         }
         catch let error as DomainError {
             throw error

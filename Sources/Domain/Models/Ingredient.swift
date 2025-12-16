@@ -24,4 +24,20 @@ public struct Ingredient: Identifiable, Codable, Equatable {
             throw IngredientConstraintsValidationError(reason: "Unit cannot be empty")
         }
     }
+    
+    // MARK: - Merging Logic
+    
+    public func canMerge(with other: Ingredient) -> Bool {
+        return self.name.lowercased() == other.name.lowercased() &&
+        self.unit.lowercased() == other.unit.lowercased()
+    }
+    
+    public func merging(with other: Ingredient) -> Ingredient {
+        return Ingredient(
+            id: self.id,
+            name: self.name,
+            amount: self.amount + other.amount,
+            unit: self.unit
+        )
+    }
 }

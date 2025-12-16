@@ -73,7 +73,7 @@ final class RecipeUseCaseTests: XCTestCase {
             XCTFail("Should fail")
         } catch let error as DomainError {
             XCTAssertTrue(error is RecipeConstraintValidationError)
-        } catch let error {
+        } catch _ {
             XCTFail("Wrong error type")
         }
     }
