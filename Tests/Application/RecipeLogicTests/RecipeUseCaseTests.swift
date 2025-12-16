@@ -13,7 +13,7 @@ final class RecipeUseCaseTests: XCTestCase {
     
     func test_createRecipe_success() async throws {
         let useCase = CreateRecipeUseCase(repository: mockRepo)
-        let ingredients = [Ingredient(name: "A", amount: 1, unit: "kg")]
+        let ingredients = [CreateIngredientDTO(name: "A", amount: 1, unit: "kg")]
         let dto = CreateRecipeDTO(
             title: "Test Recipe",
             description: "Short desc",
@@ -42,7 +42,7 @@ final class RecipeUseCaseTests: XCTestCase {
             cookingTime: 300,
             servings: "2",
             category: .lunch,
-            ingredients: [Ingredient(name: "A", amount: 1, unit: "kg")]
+            ingredients: [CreateIngredientDTO(name: "A", amount: 1, unit: "kg")]
         )
         
         do {
@@ -65,7 +65,7 @@ final class RecipeUseCaseTests: XCTestCase {
             cookingTime: 10,
             servings: "2",
             category: .lunch,
-            ingredients: [Ingredient(name: "A", amount: 1, unit: "kg")]
+            ingredients: [CreateIngredientDTO(name: "A", amount: 1, unit: "kg")]
         )
         
         do {

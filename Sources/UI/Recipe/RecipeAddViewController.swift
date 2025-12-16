@@ -163,7 +163,7 @@ class RecipeAddViewController: UIViewController {
     
     // MARK: - Action
     @objc func addRecipe() {
-        let ingredientsData = [
+        let ingredientsData: [(name: String?, amount: String?, unit: String?)] = [
             (name: ingredient1Name.text, amount: amount1.text, unit: unit1.text),
             (name: ingredient2Name.text, amount: amount2.text, unit: unit2.text)
         ]
