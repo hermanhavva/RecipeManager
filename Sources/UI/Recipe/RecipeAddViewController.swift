@@ -1,6 +1,8 @@
 import Foundation
 import SnapKit
 import UIKit
+import Combine
+import Presentation
 
 class RecipeAddViewController: UIViewController {
     
@@ -113,27 +115,77 @@ class RecipeAddViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    // MARK: - Properties
+    private var viewModel: RecipeAddViewModel!
+    private var cancellables = Set<AnyCancellable>()
+    
+    // DI method
+    func configure(viewModel: RecipeAddViewModel) {
+        self.viewModel = viewModel
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupActions()
+        bindViewModel()
+    }
+    
+    // MARK: - Binding
+    private func bindViewModel() {
+        // listen for Success
+        viewModel.$isSuccess
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] success in
+                if success {
+                    self?.dismiss(animated: true)
+                    print("Recipe saved successfully!")
+                }
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$errorMessage
+            .compactMap { $0 }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] message in
+                self?.showAlert(message: message)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$isLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLoading in
+                self?.addRecipeButton.isEnabled = !isLoading
+                self?.addRecipeButton.alpha = isLoading ? 0.5 : 1.0
+            }
+            .store(in: &cancellables)
+    }
+    
+    // MARK: - Action
+    @objc func addRecipe() {
+        let ingredientsData = [
+            (name: ingredient1Name.text, amount: amount1.text, unit: unit1.text),
+            (name: ingredient2Name.text, amount: amount2.text, unit: unit2.text)
+        ]
+        
+        viewModel.createRecipe(
+            title: recipeNameTextField.text,
+            calories: calories.text,
+            time: timeTaken.text,
+            servings: forPeople.text,
+            description: recipeDescriptionTextView.text,
+            ingredientsData: ingredientsData
+        )
+    }
+    
+    private func showAlert(message: String) {
+        let alert = UIAlertController(title: "Помилка", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
     
     func setupActions() {
         addRecipeButton.addTarget(self, action: #selector(addRecipe), for: .touchUpInside)
-    }
-    
-    @objc func addRecipe() {
-        //TODO: Here add a viewModel integration to save the recipe
-        let recipeName = recipeNameTextField.text
-        let calories = calories.text
-        let time = timeTaken.text
-        let servings = forPeople.text
-        let ingredient1 = [ingredient1Name.text, amount1.text, unit1.text]
-        let ingredient2 = [ingredient2Name.text, amount2.text, unit2.text]
-        let description = recipeDescriptionTextView.text
-        // Pass all these as parameters for recipe
     }
     
     func setupUI() {

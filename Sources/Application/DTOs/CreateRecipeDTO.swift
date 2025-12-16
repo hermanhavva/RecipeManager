@@ -8,9 +8,9 @@ public struct CreateRecipeDTO {
     public let cookingTime: TimeInterval
     public let servings: String
     public let category: RecipeCategory
-    public let ingredients: [Ingredient]
+    public let ingredients: [CreateIngredientDTO]
     
-    public init(title: String, description: String, calories: Int, cookingTime: TimeInterval, servings: String, category: RecipeCategory, ingredients: [Ingredient]) {
+    public init(title: String, description: String, calories: Int, cookingTime: TimeInterval, servings: String, category: RecipeCategory, ingredients: [CreateIngredientDTO]) {
         self.title = title
         self.description = description
         self.calories = calories
