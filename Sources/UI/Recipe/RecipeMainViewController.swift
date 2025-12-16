@@ -1,9 +1,11 @@
 import Foundation
 import SnapKit
 import UIKit
+import Presentation
 
-class RecipeMainViewController: RecipeFavoriteViewController {
-    //TODO: add an action to the button
+public final class RecipeMainViewController: RecipeBaseViewController {
+    let recipeAddViewController = RecipeAddViewController()
+    
     let addRecipeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Додати рецепт", for: .normal)
@@ -23,9 +25,19 @@ class RecipeMainViewController: RecipeFavoriteViewController {
         
         addRecipeButton.snp.makeConstraints{
             $0.width.equalTo(180)
-            $0.height.equalTo(2*RecipeMainViewController.buttonCornerRadius)
+            $0.height.equalTo(2*RecipeBaseViewController.buttonCornerRadius)
             $0.centerX.equalToSuperview()
             $0.top.equalTo(tableView.snp.bottom).offset(0.5*topBaseOffset)
         }
+        
+        addRecipeButton.addTarget(self, action: #selector(addRecipe), for: .touchUpInside)
+    }
+    
+    func configure(viewModel: RecipeAddViewModel) {
+        recipeAddViewController.configure(viewModel: viewModel)
+    }
+    
+    @objc func addRecipe() {
+        present(recipeAddViewController, animated: true)
     }
 }

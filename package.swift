@@ -8,7 +8,7 @@ let package = Package(
         .library(
             name: "RecipeManagerLib",
             targets: ["Presentation", "Application", "Domain", "Infrastructure", "UI"]
-        ),
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.7.1")),
@@ -39,10 +39,10 @@ let package = Package(
                 dependencies: ["Application"]
             ),
         // Contains: Views
-        // Depends on Presentation and SnapKit
+        // Depends on Presentation, SnapKit and Application for Mocks
             .target(
                 name: "UI",
-                dependencies: ["Presentation", "SnapKit"]
+                dependencies: ["Presentation", "Application", "Domain", "Infrastructure", "SnapKit"]
             ),
         .testTarget(
             name: "Tests",

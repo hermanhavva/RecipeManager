@@ -1,6 +1,8 @@
 import Foundation
+import Application
 import UIKit
 import SnapKit
+import Domain
 
 final class IngredientTableCell: UITableViewCell {
     // MARK: Replacing magic constants with variables
@@ -99,9 +101,9 @@ final class IngredientTableCell: UITableViewCell {
     }
     
     // TODO: Pass the recipe here, change the input type, assign the values. Just a stub
-    func setup(with ingredient: String) {
-        name.text = ingredient
-        colorCircle.backgroundColor = .green
-        count.text = "1 шт"
+    func setup(with ingredient: ViewIngredientDTO) {
+        name.text = ingredient.name
+        colorCircle.backgroundColor = .systemGreen
+        count.text = "\(ingredient.amount) \(ingredient.unit)"
     }
 }

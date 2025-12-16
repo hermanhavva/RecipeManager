@@ -17,6 +17,11 @@ public class RecipeJsonRepository: RecipeRepositoryType {
         return try await storage.getById(id: id)
     }
     
+    public func getFavorites() async throws -> [Recipe] {
+        let allRecipes = try await storage.getAll()
+        return allRecipes.filter { $0.isFavorite }
+    }
+    
     public func create(recipe: Recipe) async throws {
         let allRecipes = try await storage.getAll()
         

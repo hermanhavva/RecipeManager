@@ -1,7 +1,7 @@
 import Foundation
 import Domain
 
-public class GetRecipesUseCase {
+public class GetFavouriteRecipesUseCase {
     private let repository: RecipeRepositoryType
     
     public init(repository: RecipeRepositoryType) {
@@ -10,8 +10,7 @@ public class GetRecipesUseCase {
     
     public func execute() async throws -> [Recipe] {
         do {
-            let recipes = try await repository.getAll()
-            
+            let recipes = try await repository.getFavorites()
             return recipes.sorted { $0.createdAt > $1.createdAt }
         }
         catch let error as DomainError {
