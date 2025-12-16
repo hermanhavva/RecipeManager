@@ -2,76 +2,88 @@ import Foundation
 import Application
 import Domain
 
-
-public class JSONRepository<T: Codable & Identifiable> : GenericRepositoryType where T.ID == UUID {
+public actor JSONRepository<T: Codable & Identifiable>: GenericRepositoryType where T.ID == UUID {
+    
     private let fileURL: URL
-    private let fileManager: FileManager
     private let jsonEncoder: JSONEncoder
     private let jsonDecoder: JSONDecoder
     
+    private var cache: [T]?
+    
     public init(fileName: String, fileManager: FileManager = .default) {
-        self.fileManager = fileManager
-        let documents = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let documents = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first ?? URL(fileURLWithPath: NSTemporaryDirectory())
         self.fileURL = documents.appendingPathComponent("\(fileName).json")
+        
         self.jsonEncoder = JSONEncoder()
         self.jsonEncoder.outputFormatting = .prettyPrinted
         self.jsonDecoder = JSONDecoder()
-        
-        if !fileManager.fileExists(atPath: fileURL.path) {
-            try? save(items: [])
-        }
     }
     
-    // MARK: - Internal Helper Methods
+    // MARK: - Internal Helpers
     
-    internal func fetchAll() async throws -> [T] {
+    private func loadData() throws -> [T] {
+        // Return memory cache if available for performance
+        if let cache = cache {
+            return cache
+        }
+        
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
+            return []
+        }
+        
         do {
             let data = try Data(contentsOf: fileURL)
-            return try jsonDecoder.decode([T].self, from: data)
-        } catch {
-            throw NSError(domain: "JSONRepository", code: 1,
-                          userInfo: [
-                NSLocalizedDescriptionKey: "Failed to fetch items: \(error.localizedDescription)",
-                NSUnderlyingErrorKey: error
-            ])
-//            return []
+            let items = try jsonDecoder.decode([T].self, from: data)
+            self.cache = items // update cache
+            return items
+        }
+        catch {
+            throw RecipeAppError.dataLoadingError(underlying: error)
         }
     }
     
-    internal func save(items: [T]) throws {
-        let data = try jsonEncoder.encode(items)
-        try data.write(to: fileURL)
+    private func saveData(_ items: [T]) throws {
+        do {
+            let data = try jsonEncoder.encode(items)
+            try data.write(to: fileURL)
+            self.cache = items // update cache
+        }
+        catch {
+            throw RecipeAppError.dataSavingError(underlying: error)
+        }
     }
     
-    // MARK: - Generic CRUD Operations
+    // MARK: - GenericRepositoryType Implementation
     
     public func getAll() async throws -> [T] {
-        return try await fetchAll()
+        return try loadData()
     }
     
     public func getById(id: UUID) async throws -> T? {
-        let items = try await fetchAll()
+        let items = try loadData()
         return items.first(where: { $0.id == id })
     }
     
     public func add(_ item: T) async throws {
-        var items = try await fetchAll()
+        var items = try loadData()
         items.append(item)
-        try save(items: items)
+        try saveData(items)
     }
     
     public func update(_ item: T) async throws {
-        var items = try await fetchAll()
+        var items = try loadData()
+        
         guard let index = items.firstIndex(where: { $0.id == item.id }) else {
-            throw NSError(domain: "JSONRepository", code: 404, userInfo: [NSLocalizedDescriptionKey: "Item not found for update"])
+            throw DomainError(reason: "Item not found to update, id: \(item.id)")
         }
+        
         items[index] = item
-        try save(items: items)
+        try saveData(items)
     }
     
     public func delete(id: UUID) async throws {
-        var items = try await fetchAll()
+        var items = try loadData()
         items.removeAll(where: { $0.id == id })
-        try save(items: items)
+        try saveData(items)
     }
 }

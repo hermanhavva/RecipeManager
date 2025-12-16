@@ -3,9 +3,18 @@ import Foundation
 @testable import Application
 
 class MockCartRepository: CartRepositoryType {
+    
     var carts: [UUID: [Ingredient]] = [:]
     func getItemsInMock(cartId: UUID) -> [Ingredient] {
         return carts[cartId] ?? []
+    }
+    
+    func create(cart: Cart) async throws {
+        if (carts.keys.contains(cart.id)){
+            throw CartConflictError(cartId: cart.id)
+        }
+        
+        carts[cart.id] = cart.ingredients
     }
     
     func getItems(cartId: UUID) async throws -> [Ingredient] {

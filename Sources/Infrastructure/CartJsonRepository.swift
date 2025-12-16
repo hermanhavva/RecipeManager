@@ -5,38 +5,51 @@ import Application
 public class CartJsonRepository: CartRepositoryType {
     private let storage: JSONRepository<Cart>
     
-    public init() {
-        self.storage = JSONRepository<Cart>(fileName: "carts")
+    public init(fileName: String = "carts") {
+        self.storage = JSONRepository<Cart>(fileName: fileName)
+    }
+      
+    private func getCart(id: UUID) async throws -> Cart {
+        guard let cart = try await storage.getById(id: id) else {
+            throw CartNotFoundError(reason: "Cart with id \(id) was not found.")
+        }
+        return cart
     }
     
-    // Helper: Ensure the cart exists, or create a default one
-    private func getOrCreateCart(id: UUID) async throws -> Cart {
-        if let existing = try await storage.getById(id: id) {
-            return existing
-        } else {
-            let newCart = Cart(id: id)
-            try await storage.add(newCart)
-            return newCart
-        }
-    }
+    // MARK: - Public Interface
     
     public func getItems(cartId: UUID) async throws -> [Ingredient] {
-        let cart = try await getOrCreateCart(id: cartId)
+        let cart = try await getCart(id: cartId)
         return cart.ingredients
     }
     
     public func create(cart: Cart) async throws {
-        // Check if already exists?
         if let _ = try await storage.getById(id: cart.id) {
-            // Maybe throw conflict or just ignore? Assuming silent success for now.
-            return
+            throw CartConflictError(cartId: cart.id)
         }
+        
         try await storage.add(cart)
     }
     
-    public func add(ingredients: [Ingredient], to cartId: UUID) async throws {
-        var cart = try await getOrCreateCart(id: cartId)
-        cart.ingredients.append(contentsOf: ingredients)
+    public func add(ingredients newIngredients: [Ingredient], to cartId: UUID) async throws {
+        var cart = try await getCart(id: cartId)
+        
+        var currentIngredients = cart.ingredients
+        
+        for incomingItem in newIngredients {
+            if let index = currentIngredients.firstIndex(where: { $0.canMerge(with: incomingItem) }) {
+                // MERGE: Found an existing match
+                let existingItem = currentIngredients[index]
+                let mergedItem = existingItem.merging(with: incomingItem)
+                
+                currentIngredients[index] = mergedItem
+            } else {
+                // No match found
+                currentIngredients.append(incomingItem)
+            }
+        }
+        
+        cart.ingredients = currentIngredients
         try await storage.update(cart)
     }
     
@@ -45,13 +58,10 @@ public class CartJsonRepository: CartRepositoryType {
     }
     
     public func remove(id: UUID, from cartId: UUID) async throws {
-        var cart = try await getOrCreateCart(id: cartId)
+        var cart = try await getCart(id: cartId)
         
-        // Check if ingredient exists in cart
         guard cart.ingredients.contains(where: { $0.id == id }) else {
-            // Throwing a Domain Error here would be appropriate if strict
-            // For now, let's assume if it's not there, our job is done, or throw generic
-            throw NSError(domain: "CartRepo", code: 404, userInfo: [NSLocalizedDescriptionKey: "Ingredient not found in cart"])
+            throw IngredientNotFoundError(reason: "Ingredient with id \(id) not found in cart.")
         }
         
         cart.ingredients.removeAll(where: { $0.id == id })
@@ -59,7 +69,8 @@ public class CartJsonRepository: CartRepositoryType {
     }
     
     public func clear(cartId: UUID) async throws {
-        var cart = try await getOrCreateCart(id: cartId)
+        var cart = try await getCart(id: cartId)
+        
         cart.ingredients.removeAll()
         try await storage.update(cart)
     }

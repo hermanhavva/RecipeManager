@@ -5,7 +5,7 @@ import Foundation
 class MockRecipeRepository: RecipeRepositoryType {
     var items: [Recipe] = []
     
-    func GetAll() async throws -> [Recipe] {
+    func getAll() async throws -> [Recipe] {
         return items
     }
     

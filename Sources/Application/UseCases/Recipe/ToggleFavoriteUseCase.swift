@@ -10,7 +10,7 @@ public class ToggleFavoriteUseCase {
     
     public func execute(recipeId: UUID) async throws {
         do {
-            let recipes = try await repository.GetAll()
+            let recipes = try await repository.getAll()
             
             guard let index = recipes.firstIndex(where: { $0.id == recipeId }) else {
                 throw RecipeNotFoundError(reason: "Recipe with id: \(recipeId) not found")

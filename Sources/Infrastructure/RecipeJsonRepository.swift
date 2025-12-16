@@ -5,12 +5,12 @@ import Domain
 public class RecipeJsonRepository: RecipeRepositoryType {
     private let storage: JSONRepository<Recipe>
     
-    public init() {
-        self.storage = JSONRepository<Recipe>(fileName: "recipes")
+    public init(fileName: String = "recipes") {
+        self.storage = JSONRepository<Recipe>(fileName: fileName)
     }
     
-    public func GetAll() async throws -> [Recipe] {
-        return try await storage.fetchAll()
+    public func getAll() async throws -> [Recipe] {
+        return try await storage.getAll()
     }
     
     public func getById(id: UUID) async throws -> Recipe? {
@@ -18,7 +18,7 @@ public class RecipeJsonRepository: RecipeRepositoryType {
     }
     
     public func create(recipe: Recipe) async throws {
-        let allRecipes = try await storage.fetchAll()
+        let allRecipes = try await storage.getAll()
         
         if allRecipes.contains(where: { $0.title.lowercased() == recipe.title.lowercased() }) {
             throw RecipeConflictError(recipeTitle: recipe.title)
