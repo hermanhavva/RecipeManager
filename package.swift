@@ -7,8 +7,9 @@ let package = Package(
     products: [
         .library(
             name: "RecipeManagerLib",
-            targets: ["Presentation", "Application", "Domain", "Infrastructure", "UI"]
+            targets: ["Presentation", "Application", "Domain", "Infrastructure"]
         ),
+        .executable(name: "RecipeManagerExe", targets: ["UI"])
     ],
     dependencies: [
         .package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.7.1")),
@@ -40,7 +41,7 @@ let package = Package(
             ),
         // Contains: Views
         // Depends on Presentation, SnapKit and Application for Mocks
-            .target(
+            .executableTarget(
                 name: "UI",
                 dependencies: ["Presentation", "Application", "Domain", "Infrastructure", "SnapKit"]
             ),
