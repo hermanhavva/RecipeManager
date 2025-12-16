@@ -9,6 +9,7 @@ public class IngredientStorageViewModel: ObservableObject {
     private let getCartItemsUseCase: GetCartItemsUseCase
     private let addIngredientsToCartUseCase: AddIngredientsToCartUseCase
     private let defaultCartId = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
+    
     public init(getCartItemsUseCase: GetCartItemsUseCase, addIngredientsToCartUseCase: AddIngredientsToCartUseCase) {
         self.getCartItemsUseCase = getCartItemsUseCase
         self.addIngredientsToCartUseCase = addIngredientsToCartUseCase
@@ -17,7 +18,7 @@ public class IngredientStorageViewModel: ObservableObject {
     public func getCartItems(){
         Task {
             do {
-                var entities = try await getCartItemsUseCase.execute(cartId: defaultCartId)
+                let entities = try await getCartItemsUseCase.execute(cartId: defaultCartId)
                 
                 for ingredient in entities {
                     ingredients.append(IngredientMapper.mapToViewDTO(from: ingredient))

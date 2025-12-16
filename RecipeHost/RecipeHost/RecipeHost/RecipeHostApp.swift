@@ -1,7 +1,9 @@
-//import RecipeManagerLib
-//import UI
-//import Application
-//import Infrastructure
+//
+//  RecipeHostApp.swift
+//  RecipeHost
+//
+//  Created by Herman Havva on 16.12.2025.
+//
 
 import SwiftUI
 

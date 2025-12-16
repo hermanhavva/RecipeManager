@@ -5,7 +5,21 @@ import Domain
 import Presentation
 import Infrastructure
 
-func createTabBarController() -> UITabBarController{
+class MainTabBarController: UITabBarController, RecipeNavigationDelegate {
+    
+    var makeDetailViewController: ((Recipe) -> UIViewController)?
+    
+    func didSelectRecipe(_ recipe: Recipe, in viewController: UIViewController) {
+        // Use the factory to create the screen
+        guard let destinationVC = makeDetailViewController?(recipe) else { return }
+        
+        // Push it using the navigation controller of the sender
+        viewController.navigationController?.pushViewController(destinationVC, animated: true)
+    }
+}
+
+@MainActor
+func createTabBarController() -> UITabBarController {
     // MARK: Create Infrastructure
     let recipeRepository = RecipeJsonRepository()
     let cartRepository = CartJsonRepository()
@@ -14,10 +28,11 @@ func createTabBarController() -> UITabBarController{
     let getAllRecipesUseCase = GetRecipesUseCase(repository: recipeRepository)
     let getFavoritesUseCase = GetFavouriteRecipesUseCase(repository: recipeRepository)
     let addIngredientsUseCase = AddRecipeIngredientsToCartUseCase(cartRepository: cartRepository, recipeRepository: recipeRepository)
+    let getCartItemsUseCase = GetCartItemsUseCase(repository: cartRepository)
+    let addManualIngredientsUseCase = AddIngredientsToCartUseCase(repository: cartRepository)
     
     // MARK: Define the "Detail Screen Factory"
     let makeDetailScreen: @MainActor (Recipe) -> UIViewController = { recipe in
-        
         let detailViewModel = RecipeDisplayViewModel(
             recipe: recipe,
             addRecipeToCartUseCase: addIngredientsUseCase
@@ -26,30 +41,39 @@ func createTabBarController() -> UITabBarController{
     }
     
     // MARK: Create ViewModels
-    // Strategy for Main Screen: "Get All"
     let mainViewModel = RecipeListViewModel(fetchStrategy: {
         try await getAllRecipesUseCase.execute()
     })
     
-    // Strategy for Favorites Screen: "Get Favorites"
     let favoriteViewModel = RecipeListViewModel(fetchStrategy: {
         try await getFavoritesUseCase.execute()
     })
     
+    let ingredientViewModel = IngredientStorageViewModel(
+        getCartItemsUseCase: getCartItemsUseCase,
+        addIngredientsToCartUseCase: addManualIngredientsUseCase
+    )
+    
+    // MARK: Create View Controllers
     let recipeMainViewController = RecipeMainViewController(viewModel: mainViewModel)
-    // inject factory
-    recipeMainViewController.makeDetailViewController = makeDetailScreen
-    
     let recipeFavoriteViewController = RecipeFavoriteViewController(viewModel: favoriteViewModel)
-    // inject factory
-    recipeFavoriteViewController.makeDetailViewController = makeDetailScreen
-    
-    let ingredientStorageViewController = IngredientStorageViewController()
+    let ingredientStorageViewController = IngredientStorageViewController(viewModel: ingredientViewModel)
     
     
     // MARK: Setup Navigation & Tab Bar
-    let tabBarController = UITabBarController()
+    // CHANGE 1: Instantiate your CUSTOM controller, not the generic one
+    let tabBarController = MainTabBarController()
     
+    // CHANGE 2: Give the factory to the TabBar (the Delegate), not the children
+    tabBarController.makeDetailViewController = makeDetailScreen
+    
+    // CHANGE 3: Wire up the delegates
+    // "Hey child controllers, if someone clicks a recipe, tell the tabBarController!"
+    recipeMainViewController.navigationDelegate = tabBarController
+    recipeFavoriteViewController.navigationDelegate = tabBarController
+    
+    
+    // Standard Navigation Setup
     let recipeMainNav = UINavigationController(rootViewController: recipeMainViewController)
     let ingrStorageNav = UINavigationController(rootViewController: ingredientStorageViewController)
     let recipeFavNav = UINavigationController(rootViewController: recipeFavoriteViewController)

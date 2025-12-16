@@ -6,12 +6,16 @@ import Domain
 import Application
 import Presentation
 
-class RecipeFavoriteViewController: UIViewController {
+public protocol RecipeNavigationDelegate: AnyObject {
+    func didSelectRecipe(_ recipe: Recipe, in viewController: UIViewController)
+}
+
+open class RecipeFavoriteViewController: UIViewController {
     // MARK: - Properties
     private let viewModel: RecipeListViewModel
     private var cancellables = Set<AnyCancellable>()
     
-    public var makeDetailViewController: (@MainActor (Recipe) -> UIViewController)?
+    public weak var navigationDelegate: RecipeNavigationDelegate?
     
     // MARK: - UI Constants
     static let labelFont: UIFont = .systemFont(ofSize: 30, weight: .regular)
@@ -36,18 +40,18 @@ class RecipeFavoriteViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Lifecycle
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupBindings()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // Refresh data every time view appears (in case favorites changed)
         viewModel.loadData()
@@ -130,37 +134,10 @@ extension RecipeFavoriteViewController: UITableViewDelegate, UITableViewDataSour
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let recipe = viewModel.recipes[indexPath.row]
         
-        // we use closure to create destination
-        if let destinationVC = makeDetailViewController?(recipe) {
-            // Push it onto the navigation stack
-            self.navigationController?.pushViewController(destinationVC, animated: true)
-        }
+        // 3. Notify the delegate
+        navigationDelegate?.didSelectRecipe(recipe, in: self)
         
         self.tableView.deselectRow(at: indexPath, animated: true)
         
-        
-        // Navigation Logic:
-        // We need to construct the next screen. Ideally, use a Coordinator or Factory.
-        // For now, we will assume you can inject dependencies here or pass them down.
-        // Note: You need access to AddRecipeIngredientsToCartUseCase here to create the next VM.
-        
-        // TODO: Replace 'MockCartRepository' with your real DI Container or Factory
-        // This is a temporary wiring to make it compile:
-#if DEBUG
-        let cartRepo = MockCartRepository() // Replace with real repo
-        let recipeRepo = MockRecipeRepository() // Replace with real repo
-        let useCase = AddRecipeIngredientsToCartUseCase(cartRepository: cartRepo, recipeRepository: recipeRepo)
-        
-        let displayViewModel = RecipeDisplayViewModel(recipe: recipe, addRecipeToCartUseCase: useCase)
-        let displayVC = RecipeDisplayViewController(viewModel: displayViewModel)
-        
-        // Present or Push
-        // Since this is likely inside a NavigationController:
-        // self.navigationController?.pushViewController(displayVC, animated: true)
-        // Or generic presentation:
-        present(displayVC, animated: true)
-#endif
-        
-        self.tableView.deselectRow(at: indexPath, animated: true)
     }
 }
