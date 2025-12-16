@@ -3,6 +3,12 @@ import Domain
 
 public struct RecipeMapper {
     public static func mapToEntity(from dto: CreateRecipeDTO) throws -> Recipe {
+        var mappedIngredients: [Ingredient] = []
+        for dto in dto.ingredients {
+            let mappedIngredient = try IngredientMapper.mapToEntity(from: dto)
+            mappedIngredients.append(mappedIngredient)
+        }
+        
         let recipe = Recipe(
             id: UUID(),
             title: dto.title,
@@ -11,7 +17,7 @@ public struct RecipeMapper {
             cookingTime: dto.cookingTime,
             servings: Int(dto.servings) ?? 0,
             category: dto.category,
-            ingredients: dto.ingredients,
+            ingredients: mappedIngredients,
             isFavorite: false,
             createdAt: Date()
         )

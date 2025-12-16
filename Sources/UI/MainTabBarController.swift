@@ -16,6 +16,8 @@ func createTabBarController() -> UITabBarController{
     let addIngredientsUseCase = AddRecipeIngredientsToCartUseCase(cartRepository: cartRepository, recipeRepository: recipeRepository)
     let getCartItemsUseCase = GetCartItemsUseCase(repository: cartRepository)
     let addIngredientsToCartUseCase = AddIngredientsToCartUseCase(repository: cartRepository)
+    let createReciepUseCase = CreateRecipeUseCase(repository: recipeRepository)
+    
     
     // MARK: Define the "Detail Screen Factory"
     let makeDetailScreen: @MainActor (Recipe) -> UIViewController = { recipe in
@@ -50,6 +52,7 @@ func createTabBarController() -> UITabBarController{
     
     let ingredientStorageViewController = IngredientStorageViewController(viewModel: ingredientStorageViewModel)
     
+    let viewModel = RecipeAddViewModel(createRecipeUseCase: createReciepUseCase)
     
     // MARK: Setup Navigation & Tab Bar
     let tabBarController = UITabBarController()
@@ -57,6 +60,9 @@ func createTabBarController() -> UITabBarController{
     let recipeMainNav = UINavigationController(rootViewController: recipeMainViewController)
     let ingrStorageNav = UINavigationController(rootViewController: ingredientStorageViewController)
     let recipeFavNav = UINavigationController(rootViewController: recipeFavoriteViewController)
+    
+    let viewController = RecipeAddViewController()
+    viewController.configure(viewModel: viewModel)
     
     recipeMainNav.tabBarItem = UITabBarItem(
         title: "", image: UIImage(systemName: "house"), tag: 0
