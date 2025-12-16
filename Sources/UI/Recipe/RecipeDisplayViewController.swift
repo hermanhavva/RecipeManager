@@ -210,38 +210,4 @@ About those ingredients
     }
 }
 
-#if DEBUG
-//class PreviewCartRepository: CartRepositoryType {
-//    func getItems(cartId: UUID) async throws -> [Ingredient] { return [] }
-//    func add(ingredients: [Ingredient], to cartId: UUID) async throws {}
-//    func add(ingredient: Ingredient, to cartId: UUID) async throws {}
-//    func remove(id: UUID, from cartId: UUID) async throws {}
-//    func clear(cartId: UUID) async throws {}
-//}
 
-#Preview {
-    let ingredients = [
-        Ingredient(name: "Milk", amount: 1, unit: "l"),
-        Ingredient(name: "Eggs", amount: 2, unit: "pc")
-    ]
-    let recipe = Recipe(
-        title: "Pancakes",
-        description: "1. Mix ingredients.\n2. Fry.\n3. Eat.",
-        calories: 350,
-        cookingTime: 20,
-        servings: 2,
-        category: .breakfast,
-        ingredients: ingredients
-    )
-
-    let mockCartRepo = MockCartRepository()
-    let mockRecipeRepo = MockRecipeRepository(recipes: [recipe])
-    
-//    let mockRepo = PreviewCartRepository()
-    let useCase = AddRecipeIngredientsToCartUseCase(cartRepository: mockCartRepo, recipeRepository: mockRecipeRepo)
-    
-    let viewModel = RecipeDisplayViewModel(recipe: recipe, addRecipeToCartUseCase: useCase)
-
-    RecipeDisplayViewController(viewModel: viewModel).asPreview()
-}
-#endif

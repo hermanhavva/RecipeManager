@@ -2,8 +2,14 @@ import Foundation
 import Application
 import SnapKit
 import UIKit
+import Presentation
+import Combine
+import Domain
+import Application
 
 final class IngredientStorageViewController: UIViewController {
+    private let viewModel: IngredientStorageViewModel
+    private var cancellables = Set<AnyCancellable>()
     
     static let labelFont: UIFont = .systemFont(ofSize: 30, weight: .regular)
     
@@ -31,13 +37,54 @@ final class IngredientStorageViewController: UIViewController {
             return button
     }()
     
-    init() {
+    init(viewModel: IngredientStorageViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         setupUI()
+        setupData()
+        bindViewModel()
+        setupActions()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setupActions() {
+        addIngredientButton.addTarget(self, action: #selector(addIngredient), for: .touchUpInside)
+    }
+    
+    @objc func addIngredient() {
+        //TODO: Get user input
+        let name = "Ingredient"
+        let amount = 1
+        let unit = "kg"
+        viewModel.addIngredientsToCart(name: name, amount: amount, unit: unit)
+    }
+    
+    func setupData() {
+        viewModel.getCartItems()
+        tableView.reloadData()
+    }
+    
+    func bindViewModel() {
+        viewModel.$errorMessage
+            .compactMap { $0 }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] message in
+                self?.showAlert(title: "Помилка", message: message)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
     
     func setupUI() {
@@ -63,12 +110,18 @@ final class IngredientStorageViewController: UIViewController {
             $0.top.equalTo(addIngredientButton.snp.bottom).offset(baseOffset)
         }
         
-        ingredientTableDelegate.cellForRowAt = { tableView, indexPath in
+        ingredientTableDelegate.numberOfRows = { [weak self] in
+            return self?.viewModel.ingredients.count ?? 0
+        }
+        
+        ingredientTableDelegate.cellForRowAt = { [weak self] tableView, indexPath in
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "IngredientTableCell") as? IngredientTableCell else {
                 return UITableViewCell()
             }
             
-            cell.setup(with: ViewIngredientDTO(name: "Приклад інгредієнту", amount: 100, unit:"mg"))
+            if let ingredient = self?.viewModel.ingredients[indexPath.row] {
+                cell.setup(with: ingredient)
+            }
             
             return cell
         }
