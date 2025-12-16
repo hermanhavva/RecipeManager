@@ -10,7 +10,7 @@ public class GetRecipesUseCase {
     
     public func execute() async throws -> [Recipe] {
         do {
-            let recipes = try await repository.get()
+            let recipes = try await repository.GetAll()
             
             return recipes.sorted { $0.createdAt > $1.createdAt }
         }
