@@ -3,7 +3,7 @@ import SnapKit
 import UIKit
 import Presentation
 
-class RecipeMainViewController: RecipeFavoriteViewController {
+public final class RecipeMainViewController: RecipeBaseViewController {
     let recipeAddViewController = RecipeAddViewController()
     
     let addRecipeButton: UIButton = {
@@ -25,7 +25,7 @@ class RecipeMainViewController: RecipeFavoriteViewController {
         
         addRecipeButton.snp.makeConstraints{
             $0.width.equalTo(180)
-            $0.height.equalTo(2*RecipeMainViewController.buttonCornerRadius)
+            $0.height.equalTo(2*RecipeBaseViewController.buttonCornerRadius)
             $0.centerX.equalToSuperview()
             $0.top.equalTo(tableView.snp.bottom).offset(0.5*topBaseOffset)
         }
