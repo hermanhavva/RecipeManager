@@ -15,7 +15,7 @@ func createTabBarController() -> UITabBarController{
         do {
             try await cartRepository.create(cart: Cart(id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!, ingredients: []))
         }
-        catch _ as CartConflictError{}//After first creation this will always be called
+        catch _ as CartConflictError{}//after first creation this will always be called
         catch{print("Failed to create a cart: \(error)")}
     }
     
@@ -40,12 +40,12 @@ func createTabBarController() -> UITabBarController{
     }
     
     // MARK: Create ViewModels
-    // Strategy for Main Screen: "Get All"
+    // strategy for main screen
     let mainViewModel = RecipeListViewModel(fetchStrategy: {
         try await getAllRecipesUseCase.execute()
     })
     
-    // Strategy for Favorites Screen: "Get Favorites"
+    // strategy for favorites screen
     let favoriteViewModel = RecipeListViewModel(fetchStrategy: {
         try await getFavoritesUseCase.execute()
     })
@@ -89,7 +89,7 @@ func createTabBarController() -> UITabBarController{
         recipeFavNav
     ]
     
-    // Custom Tab Bar styling
+    // Tab bar styling
     tabBarController.setValue(MainTabBar(), forKey: "tabBar")
     tabBarController.tabBar.backgroundColor = RecipeMainViewController.buttonBackgroundColor
     

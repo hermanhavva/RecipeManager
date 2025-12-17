@@ -113,4 +113,60 @@ final class RecipeUseCaseTests: XCTestCase {
         try await useCase.execute(recipeId: recipe.id)
         XCTAssertFalse(mockRepo.items.first!.isFavorite, "Should become false")
     }
+    
+    func test_getFavourites_returnsOnlyFavoritesSortedByDate() async throws {
+        let useCase = GetFavouriteRecipesUseCase(repository: mockRepo)
+        let oldDate = Date().addingTimeInterval(-1000)
+        let newDate = Date()
+        
+        let oldFav = Recipe(title: "Old Fav", description: "", calories: 1, cookingTime: 1, servings: 1, category: .snack, ingredients: [], isFavorite: true, createdAt: oldDate)
+        let newFav = Recipe(title: "New Fav", description: "", calories: 1, cookingTime: 1, servings: 1, category: .snack, ingredients: [], isFavorite: true, createdAt: newDate)
+        let nonFav = Recipe(title: "Non Fav", description: "", calories: 1, cookingTime: 1, servings: 1, category: .snack, ingredients: [], isFavorite: false, createdAt: newDate)
+        
+        mockRepo.items = [oldFav, nonFav, newFav]
+        
+        let result = try await useCase.execute()
+        
+        XCTAssertEqual(result.count, 2, "Should only return favorite recipes")
+        XCTAssertEqual(result.first?.title, "New Fav", "Should be sorted by date (newest first)")
+        XCTAssertEqual(result.last?.title, "Old Fav")
+        XCTAssertFalse(result.contains { $0.title == "Non Fav" }, "Should not contain non-favorites")
+    }
+    
+    func test_deleteRecipe_success() async throws {
+        let useCase = DeleteRecipeUseCase(repository: mockRepo)
+        let recipe = Recipe(
+            title: "Recipe to Delete",
+            description: "Desc",
+            calories: 100,
+            cookingTime: 300,
+            servings: 2,
+            category: .dinner,
+            ingredients: []
+        )
+      
+        mockRepo.items = [recipe]
+        
+        try await useCase.execute(recipeId: recipe.id)
+        
+        XCTAssertTrue(mockRepo.items.isEmpty, "Repository should be empty after deletion")
+    }
+    
+    func test_deleteRecipe_notFound_throwsDomainError() async {
+        
+        let useCase = DeleteRecipeUseCase(repository: mockRepo)
+        let nonExistentId = UUID()
+        
+        do {
+            try await useCase.execute(recipeId: nonExistentId)
+            XCTFail("Should have thrown error")
+        }
+        catch let error as DomainError {
+            XCTAssertTrue(error is RecipeNotFoundError)
+        }
+        catch {
+            XCTFail("Wrong error type: \(error)")
+        }
+    }
 }
+
