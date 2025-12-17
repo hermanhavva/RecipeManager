@@ -22,7 +22,7 @@ final class RecipeTableCell: UITableViewCell {
     let name: UILabel = {
         let view = UILabel()
         view.font = nameFont
-        view.numberOfLines = 0 // Needed to wrap lines
+        view.numberOfLines = 0 // needed to wrap lines
         view.lineBreakMode = .byWordWrapping
         return view
     }()

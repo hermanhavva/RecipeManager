@@ -34,7 +34,7 @@ public class RecipeJsonRepository: RecipeRepositoryType {
     
     public func update(recipe: Recipe) async throws {
         guard (try await storage.getById(id: recipe.id)) != nil else {
-            throw RecipeNotFoundError(reason: "The recipe with id \(recipe.id) does not exist.")
+            throw RecipeNotFoundError(reason: "The recipe with name \(recipe.title) does not exist.")
         }
         
         try await storage.update(recipe)
