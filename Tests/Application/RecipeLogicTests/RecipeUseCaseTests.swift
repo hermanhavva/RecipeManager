@@ -152,23 +152,21 @@ final class RecipeUseCaseTests: XCTestCase {
         XCTAssertTrue(mockRepo.items.isEmpty, "Repository should be empty after deletion")
     }
     
-//    func test_deleteRecipe_notFound_throwsDomainError() async {
-//        // Arrange
-//        let useCase = DeleteRecipeUseCase(repository: mockRepo)
-//        let nonExistentId = UUID()
-
-//        mockRepo.shouldThrowNotFound = true
-//        
-//        // Act & Assert
-//        do {
-//            try await useCase.execute(recipeId: nonExistentId)
-//            XCTFail("Should have thrown error")
-//        } catch let error as DomainError {
-//            // Check for specific domain error
-//            XCTAssertTrue(error is RecipeNotFoundError)
-//        } catch {
-//            XCTFail("Wrong error type: \(error)")
-//        }
-//    }
+    func test_deleteRecipe_notFound_throwsDomainError() async {
+        
+        let useCase = DeleteRecipeUseCase(repository: mockRepo)
+        let nonExistentId = UUID()
+        
+        do {
+            try await useCase.execute(recipeId: nonExistentId)
+            XCTFail("Should have thrown error")
+        }
+        catch let error as DomainError {
+            XCTAssertTrue(error is RecipeNotFoundError)
+        }
+        catch {
+            XCTFail("Wrong error type: \(error)")
+        }
+    }
 }
 
