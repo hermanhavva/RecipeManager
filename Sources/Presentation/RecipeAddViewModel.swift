@@ -18,7 +18,6 @@ public class RecipeAddViewModel {
         self.createRecipeUseCase = createRecipeUseCase
     }
     
-    // MARK: - Intents
     public func createRecipe(
         title: String?,
         calories: String?,
@@ -60,7 +59,7 @@ public class RecipeAddViewModel {
                 return
             }
             
-            // create DTO
+            // DTO
             let dto = CreateRecipeDTO(
                 title: title,
                 description: description ?? "",

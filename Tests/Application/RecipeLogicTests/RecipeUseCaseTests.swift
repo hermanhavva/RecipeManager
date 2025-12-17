@@ -83,7 +83,6 @@ final class RecipeUseCaseTests: XCTestCase {
         let oldDate = Date().addingTimeInterval(-1000)
         let newDate = Date()
         
-        // Оновлений ініціалізатор Recipe
         let oldRecipe = Recipe(
             title: "Old", description: "", calories: 1, cookingTime: 1, servings: 1, category: .snack, ingredients: [], createdAt: oldDate
         )
